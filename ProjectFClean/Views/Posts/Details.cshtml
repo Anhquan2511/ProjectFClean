@@ -1,0 +1,100 @@
+﻿@model ProjectFClean.Models.Post
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_LayoutDetails.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Price)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Price)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Location)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Location)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Gender)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Gender)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Age)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Age)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Experience)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Experience)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.RID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.RID)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.HID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.HID)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DatePost)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DatePost)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Service.Name_of_service)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Service.Name_of_service)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", "Posts", new { id = Model.PID }, new { @class = "btn btn-primary" })|
+    @Html.ActionLink("Back to List", "Index")
+
+    @*@Html.ActionLink("Edit", "Edit", new { id = Model.PID })*@
+</p>

@@ -1,0 +1,149 @@
+﻿@model ProjectFClean.Models.Post
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+    //Layout = null;
+}
+<h1>Create</h1>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.ServiceID, "Service", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("ServiceID", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.ServiceID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Price, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        @*<div class="form-group">
+                @Html.LabelFor(model => model.Location, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Location, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Location, "", new { @class = "text-danger" })
+
+                </div>
+            </div>*@
+        <div class="form-group">
+            @Html.LabelFor(model => model.Location, "Address", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <select id="location" class="form-select border-0" name="location">
+                    <option value="">Select a Address</option>
+                    <option value="Lien Chieu">Liên Chiểu</option>
+                    <option value="Hai Chau">Hải Châu</option>
+                    <option value="Ngu Hanh Son">Ngũ Hành Sơn</option>
+                    <option value="Son Tra">Sơn Trà</option>
+                    <option value="Cam Le">Cẩm Lệ</option>
+                    <option value="Thanh Khe">Thanh Khê</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Gender, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Gender, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Age, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Age, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Age, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Experience, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Experience, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Experience, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        @*<div class="form-group">
+                @Html.LabelFor(model => model.DatePost, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.DatePost, new { @class = "form-control", type = "date" })
+                    @Html.EditorFor(model => model.DatePost, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.DatePost, "", new { @class = "text-danger" })
+                </div>
+            </div>*@
+        @*<div class="form-group">
+                @Html.LabelFor(model => model.RID, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.RID, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.RID, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.HID, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.HID, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.HID, "", new { @class = "text-danger" })
+                </div>
+            </div>*@
+
+
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10" id="contain-btn-create">
+                <input type="submit" value="Create" class="btn btn-primary" />
+
+                <a href="#" id="backToListLink">
+                    @Html.ActionLink("Back to List", "Index")
+                </a>
+            </div>
+        </div>
+    </div>
+}
+<script>
+    $(document).ready(function () {
+        $('#backToListLink').click(function (event) {
+            event.preventDefault(); // Prevent default anchor link behavior
+            history.back(); // Go back one page in browser history
+        });
+    });
+</script>
+<style>
+    #location {
+        background-color: #e9ecef;
+    }
+
+    #Description {
+        width: 100%;
+        height: 70px;
+    }
+
+    #contain-btn-create {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 5px;
+    }
+</style>

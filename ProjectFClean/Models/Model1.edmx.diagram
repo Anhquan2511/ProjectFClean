@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="89fb22a0a7c548a9b81d13214b2ed41b" Name="Diagram1">
+        <EntityTypeShape EntityType="ProjectFCleanModel.Account" Width="1.5" PointX="0.75" PointY="8.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="ProjectFCleanModel.Admin" Width="1.5" PointX="3" PointY="5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ProjectFCleanModel.Compact" Width="1.5" PointX="5.25" PointY="9.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="ProjectFCleanModel.Compact_detail" Width="1.5" PointX="7.5" PointY="7.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="ProjectFCleanModel.Feedback" Width="1.5" PointX="8.25" PointY="9.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="ProjectFCleanModel.Housekeeper" Width="1.5" PointX="3" PointY="7.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="ProjectFCleanModel.Payment" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="ProjectFCleanModel.Post" Width="1.5" PointX="8.25" PointY="13.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="ProjectFCleanModel.Renter" Width="1.5" PointX="3" PointY="12" IsExpanded="true" />
+        <EntityTypeShape EntityType="ProjectFCleanModel.Service" Width="1.5" PointX="3" PointY="16.25" IsExpanded="true" />
+        <AssociationConnector Association="ProjectFCleanModel.FK_Admin_Account" ManuallyRouted="false" />
+        <AssociationConnector Association="ProjectFCleanModel.FK_Housekeeper_Account" ManuallyRouted="false" />
+        <AssociationConnector Association="ProjectFCleanModel.FK_Renter_Account" ManuallyRouted="false" />
+        <AssociationConnector Association="ProjectFCleanModel.FK_Compact_detail_Compact" ManuallyRouted="false" />
+        <AssociationConnector Association="ProjectFCleanModel.FK_Compact_Housekeeper" ManuallyRouted="false" />
+        <AssociationConnector Association="ProjectFCleanModel.FK_Compact_Renter" ManuallyRouted="false" />
+        <AssociationConnector Association="ProjectFCleanModel.FK_Compact_Service" ManuallyRouted="false" />
+        <AssociationConnector Association="ProjectFCleanModel.FK_Feedback_Housekeeper" ManuallyRouted="false" />
+        <AssociationConnector Association="ProjectFCleanModel.FK_Feedback_Renter" ManuallyRouted="false" />
+        <AssociationConnector Association="ProjectFCleanModel.FK_Post_Housekeeper" ManuallyRouted="false" />
+        <AssociationConnector Association="ProjectFCleanModel.FK_Post_Renter" ManuallyRouted="false" />
+        <AssociationConnector Association="ProjectFCleanModel.FK_Post_Service" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

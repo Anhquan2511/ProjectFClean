@@ -1,0 +1,805 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="ProjectFCleanModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Account">
+          <Key>
+            <PropertyRef Name="AccountID" />
+          </Key>
+          <Property Name="AccountID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Identify Number" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Phone" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="Email" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Password" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Role" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Approve" Type="nchar" MaxLength="10" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Admin">
+          <Key>
+            <PropertyRef Name="AdminID" />
+          </Key>
+          <Property Name="AdminID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="AccountID" Type="int" />
+        </EntityType>
+        <EntityType Name="Compact">
+          <Key>
+            <PropertyRef Name="CID" />
+          </Key>
+          <Property Name="CID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RID" Type="int" Nullable="false" />
+          <Property Name="HID" Type="int" Nullable="false" />
+          <Property Name="Signed Date" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Work Time" Type="int" Nullable="false" />
+          <Property Name="ServiceID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Compact_detail">
+          <Key>
+            <PropertyRef Name="ServiceID" />
+          </Key>
+          <Property Name="ServiceID" Type="int" Nullable="false" />
+          <Property Name="CID" Type="int" Nullable="false" />
+          <Property Name="Total price" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Feedback">
+          <Key>
+            <PropertyRef Name="FbID" />
+          </Key>
+          <Property Name="FbID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Comment" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="HID" Type="int" Nullable="false" />
+          <Property Name="RID" Type="int" Nullable="false" />
+          <Property Name="Rate" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Housekeeper">
+          <Key>
+            <PropertyRef Name="HID" />
+          </Key>
+          <Property Name="HID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Age" Type="int" Nullable="false" />
+          <Property Name="Gender" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Price" Type="int" Nullable="false" />
+          <Property Name="Skill" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Experiment" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Money" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="Address" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="AccountID" Type="int" />
+        </EntityType>
+        <EntityType Name="Payment">
+          <Key>
+            <PropertyRef Name="PayID" />
+          </Key>
+          <Property Name="PayID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RID" Type="int" Nullable="false" />
+          <Property Name="HID" Type="int" Nullable="false" />
+          <Property Name="CID" Type="int" Nullable="false" />
+          <Property Name="Total price" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Post">
+          <Key>
+            <PropertyRef Name="PID" />
+          </Key>
+          <Property Name="PID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ServiceID" Type="int" Nullable="false" />
+          <Property Name="Price" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="Location" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Gender" Type="nvarchar" MaxLength="20" />
+          <Property Name="Age" Type="int" />
+          <Property Name="Experience" Type="nvarchar" MaxLength="20" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="RID" Type="int" />
+          <Property Name="HID" Type="int" />
+          <Property Name="DatePost" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="Renter">
+          <Key>
+            <PropertyRef Name="RID" />
+          </Key>
+          <Property Name="RID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Money" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="Address" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="AccountID" Type="int" />
+        </EntityType>
+        <EntityType Name="Service">
+          <Key>
+            <PropertyRef Name="ServiceID" />
+          </Key>
+          <Property Name="ServiceID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name of service" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Admin_Account">
+          <End Role="Account" Type="Self.Account" Multiplicity="0..1" />
+          <End Role="Admin" Type="Self.Admin" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="AccountID" />
+            </Principal>
+            <Dependent Role="Admin">
+              <PropertyRef Name="AccountID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Compact_detail_Compact">
+          <End Role="Compact" Type="Self.Compact" Multiplicity="1" />
+          <End Role="Compact_detail" Type="Self.Compact_detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Compact">
+              <PropertyRef Name="CID" />
+            </Principal>
+            <Dependent Role="Compact_detail">
+              <PropertyRef Name="CID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Compact_Housekeeper">
+          <End Role="Housekeeper" Type="Self.Housekeeper" Multiplicity="1" />
+          <End Role="Compact" Type="Self.Compact" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Housekeeper">
+              <PropertyRef Name="HID" />
+            </Principal>
+            <Dependent Role="Compact">
+              <PropertyRef Name="HID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Compact_Renter">
+          <End Role="Renter" Type="Self.Renter" Multiplicity="1" />
+          <End Role="Compact" Type="Self.Compact" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Renter">
+              <PropertyRef Name="RID" />
+            </Principal>
+            <Dependent Role="Compact">
+              <PropertyRef Name="RID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Compact_Service">
+          <End Role="Service" Type="Self.Service" Multiplicity="1" />
+          <End Role="Compact" Type="Self.Compact" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Service">
+              <PropertyRef Name="ServiceID" />
+            </Principal>
+            <Dependent Role="Compact">
+              <PropertyRef Name="ServiceID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Feedback_Housekeeper">
+          <End Role="Housekeeper" Type="Self.Housekeeper" Multiplicity="1" />
+          <End Role="Feedback" Type="Self.Feedback" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Housekeeper">
+              <PropertyRef Name="HID" />
+            </Principal>
+            <Dependent Role="Feedback">
+              <PropertyRef Name="HID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Feedback_Renter">
+          <End Role="Renter" Type="Self.Renter" Multiplicity="1" />
+          <End Role="Feedback" Type="Self.Feedback" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Renter">
+              <PropertyRef Name="RID" />
+            </Principal>
+            <Dependent Role="Feedback">
+              <PropertyRef Name="RID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Housekeeper_Account">
+          <End Role="Account" Type="Self.Account" Multiplicity="0..1" />
+          <End Role="Housekeeper" Type="Self.Housekeeper" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="AccountID" />
+            </Principal>
+            <Dependent Role="Housekeeper">
+              <PropertyRef Name="AccountID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Post_Housekeeper">
+          <End Role="Housekeeper" Type="Self.Housekeeper" Multiplicity="0..1" />
+          <End Role="Post" Type="Self.Post" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Housekeeper">
+              <PropertyRef Name="HID" />
+            </Principal>
+            <Dependent Role="Post">
+              <PropertyRef Name="HID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Post_Renter">
+          <End Role="Renter" Type="Self.Renter" Multiplicity="0..1" />
+          <End Role="Post" Type="Self.Post" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Renter">
+              <PropertyRef Name="RID" />
+            </Principal>
+            <Dependent Role="Post">
+              <PropertyRef Name="RID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Post_Service">
+          <End Role="Service" Type="Self.Service" Multiplicity="1" />
+          <End Role="Post" Type="Self.Post" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Service">
+              <PropertyRef Name="ServiceID" />
+            </Principal>
+            <Dependent Role="Post">
+              <PropertyRef Name="ServiceID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Renter_Account">
+          <End Role="Account" Type="Self.Account" Multiplicity="0..1" />
+          <End Role="Renter" Type="Self.Renter" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="AccountID" />
+            </Principal>
+            <Dependent Role="Renter">
+              <PropertyRef Name="AccountID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ProjectFCleanModelStoreContainer">
+          <EntitySet Name="Account" EntityType="Self.Account" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Admin" EntityType="Self.Admin" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Compact" EntityType="Self.Compact" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Compact_detail" EntityType="Self.Compact_detail" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Feedback" EntityType="Self.Feedback" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Housekeeper" EntityType="Self.Housekeeper" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Payment" EntityType="Self.Payment" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Post" EntityType="Self.Post" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Renter" EntityType="Self.Renter" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Service" EntityType="Self.Service" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Admin_Account" Association="Self.FK_Admin_Account">
+            <End Role="Account" EntitySet="Account" />
+            <End Role="Admin" EntitySet="Admin" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Compact_detail_Compact" Association="Self.FK_Compact_detail_Compact">
+            <End Role="Compact" EntitySet="Compact" />
+            <End Role="Compact_detail" EntitySet="Compact_detail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Compact_Housekeeper" Association="Self.FK_Compact_Housekeeper">
+            <End Role="Housekeeper" EntitySet="Housekeeper" />
+            <End Role="Compact" EntitySet="Compact" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Compact_Renter" Association="Self.FK_Compact_Renter">
+            <End Role="Renter" EntitySet="Renter" />
+            <End Role="Compact" EntitySet="Compact" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Compact_Service" Association="Self.FK_Compact_Service">
+            <End Role="Service" EntitySet="Service" />
+            <End Role="Compact" EntitySet="Compact" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Feedback_Housekeeper" Association="Self.FK_Feedback_Housekeeper">
+            <End Role="Housekeeper" EntitySet="Housekeeper" />
+            <End Role="Feedback" EntitySet="Feedback" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Feedback_Renter" Association="Self.FK_Feedback_Renter">
+            <End Role="Renter" EntitySet="Renter" />
+            <End Role="Feedback" EntitySet="Feedback" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Housekeeper_Account" Association="Self.FK_Housekeeper_Account">
+            <End Role="Account" EntitySet="Account" />
+            <End Role="Housekeeper" EntitySet="Housekeeper" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Post_Housekeeper" Association="Self.FK_Post_Housekeeper">
+            <End Role="Housekeeper" EntitySet="Housekeeper" />
+            <End Role="Post" EntitySet="Post" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Post_Renter" Association="Self.FK_Post_Renter">
+            <End Role="Renter" EntitySet="Renter" />
+            <End Role="Post" EntitySet="Post" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Post_Service" Association="Self.FK_Post_Service">
+            <End Role="Service" EntitySet="Service" />
+            <End Role="Post" EntitySet="Post" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Renter_Account" Association="Self.FK_Renter_Account">
+            <End Role="Account" EntitySet="Account" />
+            <End Role="Renter" EntitySet="Renter" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="ProjectFCleanModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Account">
+          <Key>
+            <PropertyRef Name="AccountID" />
+          </Key>
+          <Property Name="AccountID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Identify_Number" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Phone" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Password" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Role" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Approve" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Admins" Relationship="Self.FK_Admin_Account" FromRole="Account" ToRole="Admin" />
+          <NavigationProperty Name="Housekeepers" Relationship="Self.FK_Housekeeper_Account" FromRole="Account" ToRole="Housekeeper" />
+          <NavigationProperty Name="Renters" Relationship="Self.FK_Renter_Account" FromRole="Account" ToRole="Renter" />
+        </EntityType>
+        <EntityType Name="Admin">
+          <Key>
+            <PropertyRef Name="AdminID" />
+          </Key>
+          <Property Name="AdminID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="AccountID" Type="Int32" />
+          <NavigationProperty Name="Account" Relationship="Self.FK_Admin_Account" FromRole="Admin" ToRole="Account" />
+        </EntityType>
+        <EntityType Name="Compact">
+          <Key>
+            <PropertyRef Name="CID" />
+          </Key>
+          <Property Name="CID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RID" Type="Int32" Nullable="false" />
+          <Property Name="HID" Type="Int32" Nullable="false" />
+          <Property Name="Signed_Date" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Work_Time" Type="Int32" Nullable="false" />
+          <Property Name="ServiceID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Compact_detail" Relationship="Self.FK_Compact_detail_Compact" FromRole="Compact" ToRole="Compact_detail" />
+          <NavigationProperty Name="Housekeeper" Relationship="Self.FK_Compact_Housekeeper" FromRole="Compact" ToRole="Housekeeper" />
+          <NavigationProperty Name="Renter" Relationship="Self.FK_Compact_Renter" FromRole="Compact" ToRole="Renter" />
+          <NavigationProperty Name="Service" Relationship="Self.FK_Compact_Service" FromRole="Compact" ToRole="Service" />
+        </EntityType>
+        <EntityType Name="Compact_detail">
+          <Key>
+            <PropertyRef Name="ServiceID" />
+          </Key>
+          <Property Name="ServiceID" Type="Int32" Nullable="false" />
+          <Property Name="CID" Type="Int32" Nullable="false" />
+          <Property Name="Total_price" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <NavigationProperty Name="Compact" Relationship="Self.FK_Compact_detail_Compact" FromRole="Compact_detail" ToRole="Compact" />
+        </EntityType>
+        <EntityType Name="Feedback">
+          <Key>
+            <PropertyRef Name="FbID" />
+          </Key>
+          <Property Name="FbID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Comment" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="HID" Type="Int32" Nullable="false" />
+          <Property Name="RID" Type="Int32" Nullable="false" />
+          <Property Name="Rate" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Housekeeper" Relationship="Self.FK_Feedback_Housekeeper" FromRole="Feedback" ToRole="Housekeeper" />
+          <NavigationProperty Name="Renter" Relationship="Self.FK_Feedback_Renter" FromRole="Feedback" ToRole="Renter" />
+        </EntityType>
+        <EntityType Name="Housekeeper">
+          <Key>
+            <PropertyRef Name="HID" />
+          </Key>
+          <Property Name="HID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Age" Type="Int32" Nullable="false" />
+          <Property Name="Gender" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Price" Type="Int32" Nullable="false" />
+          <Property Name="Skill" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Experiment" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Money" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="Address" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="AccountID" Type="Int32" />
+          <NavigationProperty Name="Account" Relationship="Self.FK_Housekeeper_Account" FromRole="Housekeeper" ToRole="Account" />
+          <NavigationProperty Name="Compacts" Relationship="Self.FK_Compact_Housekeeper" FromRole="Housekeeper" ToRole="Compact" />
+          <NavigationProperty Name="Feedbacks" Relationship="Self.FK_Feedback_Housekeeper" FromRole="Housekeeper" ToRole="Feedback" />
+          <NavigationProperty Name="Posts" Relationship="Self.FK_Post_Housekeeper" FromRole="Housekeeper" ToRole="Post" />
+        </EntityType>
+        <EntityType Name="Payment">
+          <Key>
+            <PropertyRef Name="PayID" />
+          </Key>
+          <Property Name="PayID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RID" Type="Int32" Nullable="false" />
+          <Property Name="HID" Type="Int32" Nullable="false" />
+          <Property Name="CID" Type="Int32" Nullable="false" />
+          <Property Name="Total_price" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Post">
+          <Key>
+            <PropertyRef Name="PID" />
+          </Key>
+          <Property Name="PID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ServiceID" Type="Int32" Nullable="false" />
+          <Property Name="Price" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="Location" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Gender" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Age" Type="Int32" />
+          <Property Name="Experience" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="RID" Type="Int32" />
+          <Property Name="HID" Type="Int32" />
+          <Property Name="DatePost" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Housekeeper" Relationship="Self.FK_Post_Housekeeper" FromRole="Post" ToRole="Housekeeper" />
+          <NavigationProperty Name="Renter" Relationship="Self.FK_Post_Renter" FromRole="Post" ToRole="Renter" />
+          <NavigationProperty Name="Service" Relationship="Self.FK_Post_Service" FromRole="Post" ToRole="Service" />
+        </EntityType>
+        <EntityType Name="Renter">
+          <Key>
+            <PropertyRef Name="RID" />
+          </Key>
+          <Property Name="RID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Money" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="Address" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="AccountID" Type="Int32" />
+          <NavigationProperty Name="Account" Relationship="Self.FK_Renter_Account" FromRole="Renter" ToRole="Account" />
+          <NavigationProperty Name="Compacts" Relationship="Self.FK_Compact_Renter" FromRole="Renter" ToRole="Compact" />
+          <NavigationProperty Name="Feedbacks" Relationship="Self.FK_Feedback_Renter" FromRole="Renter" ToRole="Feedback" />
+          <NavigationProperty Name="Posts" Relationship="Self.FK_Post_Renter" FromRole="Renter" ToRole="Post" />
+        </EntityType>
+        <EntityType Name="Service">
+          <Key>
+            <PropertyRef Name="ServiceID" />
+          </Key>
+          <Property Name="ServiceID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name_of_service" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Compacts" Relationship="Self.FK_Compact_Service" FromRole="Service" ToRole="Compact" />
+          <NavigationProperty Name="Posts" Relationship="Self.FK_Post_Service" FromRole="Service" ToRole="Post" />
+        </EntityType>
+        <Association Name="FK_Admin_Account">
+          <End Role="Account" Type="Self.Account" Multiplicity="0..1" />
+          <End Role="Admin" Type="Self.Admin" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="AccountID" />
+            </Principal>
+            <Dependent Role="Admin">
+              <PropertyRef Name="AccountID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Housekeeper_Account">
+          <End Role="Account" Type="Self.Account" Multiplicity="0..1" />
+          <End Role="Housekeeper" Type="Self.Housekeeper" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="AccountID" />
+            </Principal>
+            <Dependent Role="Housekeeper">
+              <PropertyRef Name="AccountID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Renter_Account">
+          <End Role="Account" Type="Self.Account" Multiplicity="0..1" />
+          <End Role="Renter" Type="Self.Renter" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="AccountID" />
+            </Principal>
+            <Dependent Role="Renter">
+              <PropertyRef Name="AccountID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Compact_detail_Compact">
+          <End Role="Compact" Type="Self.Compact" Multiplicity="1" />
+          <End Role="Compact_detail" Type="Self.Compact_detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Compact">
+              <PropertyRef Name="CID" />
+            </Principal>
+            <Dependent Role="Compact_detail">
+              <PropertyRef Name="CID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Compact_Housekeeper">
+          <End Role="Housekeeper" Type="Self.Housekeeper" Multiplicity="1" />
+          <End Role="Compact" Type="Self.Compact" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Housekeeper">
+              <PropertyRef Name="HID" />
+            </Principal>
+            <Dependent Role="Compact">
+              <PropertyRef Name="HID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Compact_Renter">
+          <End Role="Renter" Type="Self.Renter" Multiplicity="1" />
+          <End Role="Compact" Type="Self.Compact" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Renter">
+              <PropertyRef Name="RID" />
+            </Principal>
+            <Dependent Role="Compact">
+              <PropertyRef Name="RID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Compact_Service">
+          <End Role="Service" Type="Self.Service" Multiplicity="1" />
+          <End Role="Compact" Type="Self.Compact" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Service">
+              <PropertyRef Name="ServiceID" />
+            </Principal>
+            <Dependent Role="Compact">
+              <PropertyRef Name="ServiceID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Feedback_Housekeeper">
+          <End Role="Housekeeper" Type="Self.Housekeeper" Multiplicity="1" />
+          <End Role="Feedback" Type="Self.Feedback" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Housekeeper">
+              <PropertyRef Name="HID" />
+            </Principal>
+            <Dependent Role="Feedback">
+              <PropertyRef Name="HID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Feedback_Renter">
+          <End Role="Renter" Type="Self.Renter" Multiplicity="1" />
+          <End Role="Feedback" Type="Self.Feedback" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Renter">
+              <PropertyRef Name="RID" />
+            </Principal>
+            <Dependent Role="Feedback">
+              <PropertyRef Name="RID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Post_Housekeeper">
+          <End Role="Housekeeper" Type="Self.Housekeeper" Multiplicity="0..1" />
+          <End Role="Post" Type="Self.Post" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Housekeeper">
+              <PropertyRef Name="HID" />
+            </Principal>
+            <Dependent Role="Post">
+              <PropertyRef Name="HID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Post_Renter">
+          <End Role="Renter" Type="Self.Renter" Multiplicity="0..1" />
+          <End Role="Post" Type="Self.Post" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Renter">
+              <PropertyRef Name="RID" />
+            </Principal>
+            <Dependent Role="Post">
+              <PropertyRef Name="RID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Post_Service">
+          <End Role="Service" Type="Self.Service" Multiplicity="1" />
+          <End Role="Post" Type="Self.Post" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Service">
+              <PropertyRef Name="ServiceID" />
+            </Principal>
+            <Dependent Role="Post">
+              <PropertyRef Name="ServiceID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ProjectFCleanEntities2" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Accounts" EntityType="Self.Account" />
+          <EntitySet Name="Admins" EntityType="Self.Admin" />
+          <EntitySet Name="Compacts" EntityType="Self.Compact" />
+          <EntitySet Name="Compact_detail" EntityType="Self.Compact_detail" />
+          <EntitySet Name="Feedbacks" EntityType="Self.Feedback" />
+          <EntitySet Name="Housekeepers" EntityType="Self.Housekeeper" />
+          <EntitySet Name="Payments" EntityType="Self.Payment" />
+          <EntitySet Name="Posts" EntityType="Self.Post" />
+          <EntitySet Name="Renters" EntityType="Self.Renter" />
+          <EntitySet Name="Services" EntityType="Self.Service" />
+          <AssociationSet Name="FK_Admin_Account" Association="Self.FK_Admin_Account">
+            <End Role="Account" EntitySet="Accounts" />
+            <End Role="Admin" EntitySet="Admins" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Housekeeper_Account" Association="Self.FK_Housekeeper_Account">
+            <End Role="Account" EntitySet="Accounts" />
+            <End Role="Housekeeper" EntitySet="Housekeepers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Renter_Account" Association="Self.FK_Renter_Account">
+            <End Role="Account" EntitySet="Accounts" />
+            <End Role="Renter" EntitySet="Renters" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Compact_detail_Compact" Association="Self.FK_Compact_detail_Compact">
+            <End Role="Compact" EntitySet="Compacts" />
+            <End Role="Compact_detail" EntitySet="Compact_detail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Compact_Housekeeper" Association="Self.FK_Compact_Housekeeper">
+            <End Role="Housekeeper" EntitySet="Housekeepers" />
+            <End Role="Compact" EntitySet="Compacts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Compact_Renter" Association="Self.FK_Compact_Renter">
+            <End Role="Renter" EntitySet="Renters" />
+            <End Role="Compact" EntitySet="Compacts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Compact_Service" Association="Self.FK_Compact_Service">
+            <End Role="Service" EntitySet="Services" />
+            <End Role="Compact" EntitySet="Compacts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Feedback_Housekeeper" Association="Self.FK_Feedback_Housekeeper">
+            <End Role="Housekeeper" EntitySet="Housekeepers" />
+            <End Role="Feedback" EntitySet="Feedbacks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Feedback_Renter" Association="Self.FK_Feedback_Renter">
+            <End Role="Renter" EntitySet="Renters" />
+            <End Role="Feedback" EntitySet="Feedbacks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Post_Housekeeper" Association="Self.FK_Post_Housekeeper">
+            <End Role="Housekeeper" EntitySet="Housekeepers" />
+            <End Role="Post" EntitySet="Posts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Post_Renter" Association="Self.FK_Post_Renter">
+            <End Role="Renter" EntitySet="Renters" />
+            <End Role="Post" EntitySet="Posts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Post_Service" Association="Self.FK_Post_Service">
+            <End Role="Service" EntitySet="Services" />
+            <End Role="Post" EntitySet="Posts" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="ProjectFCleanModelStoreContainer" CdmEntityContainer="ProjectFCleanEntities2">
+          <EntitySetMapping Name="Accounts">
+            <EntityTypeMapping TypeName="ProjectFCleanModel.Account">
+              <MappingFragment StoreEntitySet="Account">
+                <ScalarProperty Name="AccountID" ColumnName="AccountID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Identify_Number" ColumnName="Identify Number" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Role" ColumnName="Role" />
+                <ScalarProperty Name="Approve" ColumnName="Approve" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Admins">
+            <EntityTypeMapping TypeName="ProjectFCleanModel.Admin">
+              <MappingFragment StoreEntitySet="Admin">
+                <ScalarProperty Name="AdminID" ColumnName="AdminID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="AccountID" ColumnName="AccountID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Compacts">
+            <EntityTypeMapping TypeName="ProjectFCleanModel.Compact">
+              <MappingFragment StoreEntitySet="Compact">
+                <ScalarProperty Name="CID" ColumnName="CID" />
+                <ScalarProperty Name="RID" ColumnName="RID" />
+                <ScalarProperty Name="HID" ColumnName="HID" />
+                <ScalarProperty Name="Signed_Date" ColumnName="Signed Date" />
+                <ScalarProperty Name="Work_Time" ColumnName="Work Time" />
+                <ScalarProperty Name="ServiceID" ColumnName="ServiceID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Compact_detail">
+            <EntityTypeMapping TypeName="ProjectFCleanModel.Compact_detail">
+              <MappingFragment StoreEntitySet="Compact_detail">
+                <ScalarProperty Name="ServiceID" ColumnName="ServiceID" />
+                <ScalarProperty Name="CID" ColumnName="CID" />
+                <ScalarProperty Name="Total_price" ColumnName="Total price" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Feedbacks">
+            <EntityTypeMapping TypeName="ProjectFCleanModel.Feedback">
+              <MappingFragment StoreEntitySet="Feedback">
+                <ScalarProperty Name="FbID" ColumnName="FbID" />
+                <ScalarProperty Name="Comment" ColumnName="Comment" />
+                <ScalarProperty Name="HID" ColumnName="HID" />
+                <ScalarProperty Name="RID" ColumnName="RID" />
+                <ScalarProperty Name="Rate" ColumnName="Rate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Housekeepers">
+            <EntityTypeMapping TypeName="ProjectFCleanModel.Housekeeper">
+              <MappingFragment StoreEntitySet="Housekeeper">
+                <ScalarProperty Name="HID" ColumnName="HID" />
+                <ScalarProperty Name="Age" ColumnName="Age" />
+                <ScalarProperty Name="Gender" ColumnName="Gender" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="Skill" ColumnName="Skill" />
+                <ScalarProperty Name="Experiment" ColumnName="Experiment" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Money" ColumnName="Money" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="AccountID" ColumnName="AccountID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Payments">
+            <EntityTypeMapping TypeName="ProjectFCleanModel.Payment">
+              <MappingFragment StoreEntitySet="Payment">
+                <ScalarProperty Name="PayID" ColumnName="PayID" />
+                <ScalarProperty Name="RID" ColumnName="RID" />
+                <ScalarProperty Name="HID" ColumnName="HID" />
+                <ScalarProperty Name="CID" ColumnName="CID" />
+                <ScalarProperty Name="Total_price" ColumnName="Total price" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Posts">
+            <EntityTypeMapping TypeName="ProjectFCleanModel.Post">
+              <MappingFragment StoreEntitySet="Post">
+                <ScalarProperty Name="PID" ColumnName="PID" />
+                <ScalarProperty Name="ServiceID" ColumnName="ServiceID" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="Location" ColumnName="Location" />
+                <ScalarProperty Name="Gender" ColumnName="Gender" />
+                <ScalarProperty Name="Age" ColumnName="Age" />
+                <ScalarProperty Name="Experience" ColumnName="Experience" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="RID" ColumnName="RID" />
+                <ScalarProperty Name="HID" ColumnName="HID" />
+                <ScalarProperty Name="DatePost" ColumnName="DatePost" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Renters">
+            <EntityTypeMapping TypeName="ProjectFCleanModel.Renter">
+              <MappingFragment StoreEntitySet="Renter">
+                <ScalarProperty Name="RID" ColumnName="RID" />
+                <ScalarProperty Name="Money" ColumnName="Money" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="AccountID" ColumnName="AccountID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Services">
+            <EntityTypeMapping TypeName="ProjectFCleanModel.Service">
+              <MappingFragment StoreEntitySet="Service">
+                <ScalarProperty Name="ServiceID" ColumnName="ServiceID" />
+                <ScalarProperty Name="Name_of_service" ColumnName="Name of service" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

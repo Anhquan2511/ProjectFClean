@@ -1,0 +1,56 @@
+﻿@model ProjectFClean.Models.Account
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<!-- table section -->
+<div class="col-md-12">
+    <div class="white_shd full margin_bottom_30">
+        <div class="full graph_head">
+            <div class="heading1 margin_0">
+                <h2>Manage account</h2>
+            </div>
+        </div>
+        <div class="table_section padding_infor_info">
+            <div class="table-responsive-sm">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>AccountID</th>
+                            <th>Name</th>
+                            <th>Identify number</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Password</th>
+                            <th>Role</th>
+                            <th>Approve</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.Accounts != null)
+                        {
+                            foreach (var account in ViewBag.Accounts)
+                            {
+                                <tr>
+                                    <td>@account.AccountID</td>
+                                    <td>@account.Name</td>
+                                    <td>@account.Identify_Number</td>
+                                    <td>@account.Phone</td>
+                                    <td>@account.Email</td>
+                                    <td>@account.Password</td>
+                                    <td>@account.Role</td>
+                                    <td>@account.Approve</td>
+                                    <td><a href="@Url.Action("Edit", "Account", new { id = account.AccountID })">Edit</a></td>
+                                    <td><a href="@Url.Action("Delete", "Account", new { id = account.AccountID })">Delete</a></td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

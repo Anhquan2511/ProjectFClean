@@ -1,0 +1,188 @@
+﻿@model ProjectFClean.Models.Housekeeper
+
+@{
+    ViewBag.Title = "FClean";
+    Layout = "~/Views/Shared/_LayoutDetails.cshtml";
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<body>
+    <div class="Rent">
+        <div class="img-Housekeeper">
+            <img src="/img/@(Html.DisplayFor(model => model.HID)).jpg" />
+            <div class="Ready">Ready</div>
+        </div>
+
+        <div class="Detail">
+            <div class="NameHousekeeper">@Html.DisplayFor(model => model.Account.Name)</div>
+
+            <div class="Line"></div>
+            <div class="LineService">
+                <div class="Service">
+                    <div class="NameService">@Html.DisplayFor(model => model.Skill)</div>
+                </div>
+                <div class="Line"></div>
+            </div>
+            <div class="Information">Information</div>
+            <div class="Description">@Html.DisplayFor(model => model.Description)</div>
+        </div>
+        <div class="Rent-right">
+            <div class="price">@Html.DisplayFor(model => model.Price) đ/h</div>
+            @*<div class="Rate" >
+                    <div class="Star" style="width: 40.24px; height: 38px;  top: -0px;  justify-content: center; align-items: center; display: inline-flex">
+                        <div class="Star" style="width: 40.24px; height: 38px; position: relative; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+                            <img class="Star" style="width: 40.24px; height: 38px" src="https://via.placeholder.com/40x38" />
+                            <div class="Star" style="width: 20.12px; height: 38px; background: #FFCB45"></div>
+                        </div>
+                    </div>
+                </div>*@
+            <div class="BtnDonate">
+                <div class="Donate">DONATE</div>
+            </div>
+            <div class="BtnChat">
+                <div class="Chat">CHAT</div>
+            </div>
+            <div class="BtnRent">
+                <div class="Rent-item">RENT</div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
+<style>
+    .Rent {
+        display: flex;
+        width: 100%;
+        gap: 20px;
+        padding: 50px 10px;
+        height: 600px;
+    }
+
+    img {
+        width: 288px;
+        height: 276px;
+        border-radius: 24px;
+    }
+
+    .Line {
+        width: 650px;
+        border: 1px solid black;
+    }
+
+    .Information {
+        color: black;
+        font-size: 50px;
+        font-family: Inter;
+        font-weight: 700;
+    }
+
+    .Detail {
+        width: 650px;
+        height: 416px;
+    }
+
+    .NameHousekeeper {
+        color: black;
+        font-size: 50px;
+        font-family: Inter;
+        font-weight: 700;
+    }
+
+    .Description {
+        color: black;
+        font-size: 50px;
+        font-family: Inter;
+        font-weight: 700;
+    }
+
+    .NameService {
+        text-align: center;
+        margin: 20px 0;
+        width: 650px;
+        height: 40px;
+        background-color: black;
+        border-radius: 10px;
+        color: #fff;
+        font-size: 20px;
+        font-family: Inter;
+        font-weight: 700;
+    }
+
+    .Description {
+        color: black;
+        font-size: 30px;
+        font-family: Inter;
+        font-weight: 400;
+    }
+
+    .Rent-right {
+        width: 320px;
+        height: 330px;
+        background: white;
+        border-radius: 20px;
+        border: 1px black solid;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .price {
+        width: 343px;
+        height: 54px;
+        color: #FF0000;
+        font-size: 30px;
+        font-family: Inter;
+        font-weight: 700;
+        padding: 5px 10px;
+    }
+
+    .Donate {
+        margin: 0 35px;
+        width: 250px;
+        height: 71px;
+        background: white;
+        border-radius: 20px;
+        border: 1px black solid;
+        color: black;
+        font-size: 40px;
+        font-family: Inter;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .Chat {
+        margin: 0 35px;
+        width: 250px;
+        height: 71px;
+        background: white;
+        border-radius: 20px;
+        border: 1px black solid;
+        color: black;
+        font-size: 40px;
+        font-family: Inter;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .Rent-item {
+        margin: 0 35px;
+        width: 250px;
+        height: 71px;
+        background: #FF0000;
+        border-radius: 20px;
+        color: white;
+        font-size: 40px;
+        font-family: Inter;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .Ready {
+        color: #3EC100;
+        font-size: 40px;
+        font-family: Inter;
+        font-weight: 700;
+        margin-left: 80px;
+    }
+</style>

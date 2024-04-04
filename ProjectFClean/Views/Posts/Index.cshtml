@@ -1,0 +1,91 @@
+﻿@using Newtonsoft.Json
+@model ProjectFClean.Controllers.PostsController.PostIndexViewModel
+
+@{
+    ViewBag.Title = "FClean";
+    Layout = "~/Views/Shared/_LayoutPage.cshtml";
+}
+<body>
+    <div>
+        <!-- Posts Start -->
+        <div class="container-xxl py-5">
+            <div class="container">
+                <div class="container-heading">
+                    <h1 class="text-center mb-5 wow fadeInUp" id="header-post" data-wow-delay="0.1s">Post Listing</h1>
+                    <a class="btn btn-primary" href="~/Posts/Create" id="btn-add">Create a Post</a>
+                </div>
+
+                <div class="listpost">
+
+                    @foreach (var post in Model.ListPost)
+                    {
+                        <a class="post-link" href="@Url.Action("DetailsPost", "Posts", new { pid = post.PID })">
+                            <div class="post-item">
+                                <div class="list-item-post">
+                                    <h5 class="mb-3">@post.Service.Name_of_service</h5>
+                                    <span id="name-author" class="text-truncate me-3"><i class="fa-solid fa-bookmark" style="color: #00b074;"></i>@post.HID </span>
+                                    <span class="text-truncate me-0"><i class="far fa-money-bill-alt text-primary me-2"></i>@post.Price</span>
+                                    <span class="text-truncate me-3"><i class="fa fa-map-marker-alt text-primary me-2"></i>@post.Location </span>
+                                    @*<span class="text-truncate me-3"><i class="far fa-calendar-alt text-primary me-2"></i>@post.DatePost.ToString("dd-MM-yyyy")</span>*@
+                                </div>
+                                <div class="apply">
+                                    <a href="#" class="btn btn-primary">Apply Now</a>
+                                </div>
+                            </div>
+                        </a>
+                    }
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    $(document).on('click', '.apply', function (e) {
+        e.preventDefault();
+        var PID = $(this).data('pid');
+        window.location.href = $(this).attr('href');
+    });
+</script>
+
+<style>
+    .post-item {
+        display: flex;
+        justify-content: space-between;
+        padding-left: 100px;
+        align-items: flex-end;
+    }
+
+
+    .list-item-post {
+        display: flex;
+        padding: 15px;
+        gap: 15px;
+    }
+
+
+
+    .container-heading {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    #btn-add {
+        height: 40px;
+    }
+
+    #header-post {
+        margin-left: 500px;
+    }
+
+    h5.mb-3 {
+        margin-right: 200px;
+    }
+
+    i.fa.fa-map-marker-alt.text-primary.me-2 {
+        margin-left: 10px;
+    }
+</style>
+
