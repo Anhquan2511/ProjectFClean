@@ -9,26 +9,136 @@ namespace ProjectFClean.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ProjectFCleanEntities2 db;
+        private readonly ProjectFCleanEntities6 db;
         public HomeController()
         {
-            db = new ProjectFCleanEntities2();
+            db = new ProjectFCleanEntities6();
         }
         public class HomeIndexViewModel
         {
             public List<Housekeeper> ListHousekeeper { get; set; }
             public List<Service> ListService { get; set; }
+            public List<Post> ListPost { get; set; }
+            public int TotalPages { get; set; }
+            public int CurrentPage { get; set; }
+            public int? SortOption { get; set; } // Thêm thuộc tính SortOption
+
         }
-        public ActionResult Index()
+        //public ActionResult Index(int? page)
+        //{
+        //    int pageSize = 6; // Số housekeeper muốn hiển thị trên mỗi trang
+        //    int pageNumber = page ?? 1;
+
+        //    var viewModel = new HomeIndexViewModel
+        //    {
+        //        ListHousekeeper = db.Housekeeper
+        //                             .OrderBy(h => h.HID) // Sắp xếp theo một trường nhất định
+        //                             .Skip((pageNumber - 1) * pageSize)
+        //                             .Take(pageSize)
+        //                             .ToList(),
+        //        ListService = db.Service.ToList(),
+        //        ListPost = db.Post.ToList(),
+        //        CurrentPage = pageNumber // Gán giá trị cho thuộc tính CurrentPage
+        //    };
+
+        //    // Tính tổng số housekeeper
+        //    int totalHousekeepers = db.Housekeeper.Count();
+        //    // Tính tổng số trang bằng cách chia tổng số housekeeper cho kích thước trang
+        //    viewModel.TotalPages = (int)Math.Ceiling((double)totalHousekeepers / pageSize);
+
+        //    return View(viewModel);
+        //}
+
+        public ActionResult Index(int? page)
         {
+            int pageSize = 6; // Số housekeeper muốn hiển thị trên mỗi trang
+            int pageNumber = page ?? 1;
+
+            // Lấy các tham số từ session
+            string gender = Session["Gender"] as string;
+            string location = Session["Location"] as string;
+            string name = Session["Name"] as string;
+            string service = Session["Service"] as string;
+            int? sortOption = Session["SortOption"] as int?;
+
+            // Lấy danh sách housekeepers từ cơ sở dữ liệu
+            IQueryable<Housekeeper> housekeepersQuery = db.Housekeepers;
+            if (!housekeepersQuery.Any())
+            {
+                housekeepersQuery = Enumerable.Empty<Housekeeper>().AsQueryable();
+            }
+            // Áp dụng các tham số search từ session
+            if (!string.IsNullOrEmpty(gender))
+            {
+                housekeepersQuery = housekeepersQuery.Where(h => h.Gender == gender);
+            }
+
+            if (!string.IsNullOrEmpty(location))
+            {
+                housekeepersQuery = housekeepersQuery.Where(h => h.Address == location);
+            }
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                housekeepersQuery = housekeepersQuery.Where(h => h.Account.Name.Contains(name));
+            }
+
+            if (!string.IsNullOrEmpty(service))
+            {
+                housekeepersQuery = housekeepersQuery.Where(h => h.Skill.Contains(service));
+            }
+
+            // Áp dụng các tham số sort từ session
+            if (sortOption != null)
+            {
+                switch (sortOption)
+                {
+                    case 1: // Giá tăng dần
+                        housekeepersQuery = housekeepersQuery.OrderBy(h => h.Price);
+                        break;
+                    case 2: // Giá giảm dần
+                        housekeepersQuery = housekeepersQuery.OrderByDescending(h => h.Price);
+                        break;
+                    case 3: // Kinh nghiệm giảm dần
+                        housekeepersQuery = housekeepersQuery.OrderByDescending(h => h.Experiment);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                // Sắp xếp mặc định nếu không có tùy chọn
+                housekeepersQuery = housekeepersQuery.OrderBy(h => h.HID);
+            }
+
+            // Lấy số lượng housekeepers trong trang hiện tại
+            List<Housekeeper> housekeepersInPage = housekeepersQuery
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+            if(housekeepersInPage == null)
+            {
+                housekeepersInPage = new List<Housekeeper>();
+            }
+            // Tạo view model
             var viewModel = new HomeIndexViewModel
             {
-                ListHousekeeper = db.Housekeepers .ToList(),
-                ListService = db.Services.ToList()
+                ListHousekeeper = housekeepersInPage,
+                ListService = db.Services.ToList(),
+                CurrentPage = pageNumber,
+                SortOption = sortOption,
+                ListPost = db.Posts.ToList()
             };
+
+            // Tính tổng số housekeeper
+            int totalHousekeepers = db.Housekeepers.Count();
+            // Tính tổng số trang bằng cách chia tổng số housekeeper cho kích thước trang
+            viewModel.TotalPages = (int)Math.Ceiling((double)totalHousekeepers / pageSize);
 
             return View(viewModel);
         }
+
         public ActionResult Contact()
         {
             return View();
@@ -47,7 +157,10 @@ namespace ProjectFClean.Controllers
             Session.Abandon(); // Hủy session hiện tại
             return RedirectToAction("Index", "Home"); // Chuyển hướng đến trang chủ
         }
-       
+        public ActionResult Profile()
+        {
+            return View();
+        }
         public ActionResult Details(int HID = 0)
         {
             Housekeeper housekeeper = db.Housekeepers.Find(HID);
@@ -92,40 +205,49 @@ namespace ProjectFClean.Controllers
         }
 
 
-
-        public PartialViewResult Sort(int sortOption)
+        [HttpGet]
+        public PartialViewResult Sort(int sortOption, int? page)
         {
+            ViewBag.SortOption = sortOption;
+            int pageSize = 6; // Số housekeeper muốn hiển thị trên mỗi trang
+            int pageNumber = page ?? 1;
 
+            // Lưu giá trị sortOption vào Session
+            Session["SortOption"] = sortOption;
 
+            // Lấy danh sách housekeepers đã được sắp xếp theo option được chọn
+            var sortedHousekeepers = SortHousekeepers(sortOption);
 
-            // Get the list of housekeepers from the database
-            var housekeepers = db.Housekeepers.ToList();
+            // Skip và Take dữ liệu theo trang
+            var housekeepersOnPage = sortedHousekeepers
+                                        .Skip((pageNumber - 1) * pageSize)
+                                        .Take(pageSize)
+                                        .ToList();
 
-            // Perform sorting based on sortOption
+            // Return the sorted and paginated list as a partial view
+            return PartialView("_HousekeeperList", housekeepersOnPage);
+        }
+        private IQueryable<Housekeeper> SortHousekeepers(int sortOption)
+        {
+            IQueryable<Housekeeper> housekeepers = db.Housekeepers;
+
             switch (sortOption)
             {
                 case 1: // Price Ascending
-                    housekeepers = housekeepers.OrderBy(h => h.Price).ToList();
+                    housekeepers = housekeepers.OrderBy(h => h.Price);
                     break;
                 case 2: // Price Decreasing
-                    housekeepers = housekeepers.OrderByDescending(h => h.Price).ToList();
+                    housekeepers = housekeepers.OrderByDescending(h => h.Price);
                     break;
                 case 3: // Experience Decreasing
-                    housekeepers = housekeepers.OrderByDescending(h => h.Experiment).ToList();
+                    housekeepers = housekeepers.OrderByDescending(h => h.Experiment);
                     break;
                 default:
-                    // Default sorting (if necessary)
+                    housekeepers = housekeepers.OrderBy(h => h.HID);
                     break;
             }
 
-            // Return the sorted list as a partial view
-            return PartialView("_HousekeeperList", housekeepers);
-
+            return housekeepers;
         }
-    
-
-
-
-
     }
 }

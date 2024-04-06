@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 
@@ -9,16 +10,17 @@ namespace ProjectFClean.Controllers
 {
     public class AccountsController : Controller
     {
-        ProjectFCleanEntities2 db = new ProjectFCleanEntities2();
+        ProjectFCleanEntities6 db = new ProjectFCleanEntities6();
 
 
 
-        // GET: Accounts
         public ActionResult Register()
         {
             return View();
         }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Register(Account account, Renter renter, Housekeeper housekeeper)
         {
             if (CheckEmail(account.Email))
@@ -37,25 +39,25 @@ namespace ProjectFClean.Controllers
                     Renter renterAdd = new Renter
                     {
                         AccountID = accId,
-                        Address = renter.Address, 
+                        Address = renter.Address,
                         Money = 0 // hoặc giá trị mặc định khác tùy thuộc vào yêu cầu của ứng dụng
                     };
                     db.Renters.Add(renterAdd);
-                    db.SaveChanges() ;
+                    db.SaveChanges();
                 }
                 else if (account.Role == "Housekeeper")
                 {
                     Housekeeper housekeeperAdd = new Housekeeper
                     {
-                            AccountID = accId,
-                            Address = housekeeper.Address, 
-                            Age = housekeeper.Age,
-                            Gender = housekeeper.Gender,
-                            Price = housekeeper.Price,
-                            Skill = housekeeper.Skill,
-                            Experiment = housekeeper.Experiment,
-                            Description = housekeeper.Description,
-                            Money = 0, // hoặc giá trị mặc định khác tùy thuộc vào yêu cầu của ứng dụng  
+                        AccountID = accId,
+                        Address = housekeeper.Address,
+                        Age = housekeeper.Age,
+                        Gender = housekeeper.Gender,
+                        Price = housekeeper.Price,
+                        Skill = housekeeper.Skill,
+                        
+                        Description = housekeeper.Description,
+                        Money = 0, // hoặc giá trị mặc định khác tùy thuộc vào yêu cầu của ứng dụng  
                     };
                     db.Housekeepers.Add(housekeeperAdd);
                     db.SaveChanges();
@@ -79,39 +81,86 @@ namespace ProjectFClean.Controllers
             }
             return View();
         }
+        //[HttpPost]
+        //public ActionResult Login(Account account)
+        //{
+        //    var Email = account.Email;
+        //    var Password = account.Password;
+        //    var CheckUser = db.Account.SingleOrDefault(x => x.Email.Equals(Email) && x.Password.Equals(Password));
+        //    if (CheckUser != null)
+        //    {
+        //        // Kiểm tra role của người dùng
+        //        string role = CheckUser.Role;
+        //        if (role != null && (role == "Housekeeper" || role == "Renter"))
+        //        {
+        //            Session["Account"] = CheckUser;
+        //            return RedirectToAction("Index", "Home");
+        //        }
+        //        else if (role != null && role == "Admin")
+        //        {
+        //            Session["Account"] = CheckUser;
+        //            return RedirectToAction("Index", "Admin");
+        //        }
+        //        else
+        //        {
+        //            // Trường hợp role không hợp lệ
+        //            ViewBag.LoginFail = "Invalid role. Please contact administrator.";
+        //            return View("Login");
+        //        }
+        //    }
+        //    else
+        //    {
+        //        ViewBag.LoginFail = "Login failed. Try again.";
+        //        return View("Login");
+        //    }
+        //}
         [HttpPost]
         public ActionResult Login(Account account)
         {
             var Email = account.Email;
             var Password = account.Password;
             var CheckUser = db.Accounts.SingleOrDefault(x => x.Email.Equals(Email) && x.Password.Equals(Password));
-            if (CheckUser != null) 
+            if (CheckUser != null)
             {
-                // Kiểm tra role của người dùng
-                string role = CheckUser.Role;
-                if (role != null && role == "Housekeeper" )
+                // Kiểm tra trạng thái của người dùng
+                string status = CheckUser.Approve;
+                if (status != null)
                 {
-                    Session["Account"] = CheckUser;
-                    var houseKeeper = db.Housekeepers.SingleOrDefault(hk => hk.AccountID  == CheckUser.AccountID);
-                    Session["Housekeeper"] = houseKeeper;
-                    return RedirectToAction("Index", "Home");
-                }
-                else if (role != null && role == "Renter")
-                {
-                    Session["Account"] = CheckUser;
-                    var renter = db.Renters.SingleOrDefault(rt => rt.AccountID == CheckUser.AccountID);
-                    Session["Renter"] = renter;
-                    return RedirectToAction("Index", "Home");
-                }
-                else if (role != null && role == "Admin")
-                {
-                    Session["Account"] = CheckUser;
-                    return RedirectToAction("Index", "Admin");
+                    if (status == "Yes")
+                    {
+                        // Kiểm tra role của người dùng
+                        string role = CheckUser.Role;
+                        if (role != null && (role == "Housekeeper" || role == "Renter"))
+                        {
+                            Session["Account"] = CheckUser;
+                            return RedirectToAction("Index", "Home");
+                        }
+                        else if (role != null && role == "Admin")
+                        {
+                            Session["Account"] = CheckUser;
+                            return RedirectToAction("Index", "Admin");
+                        }
+                        else
+                        {
+                            // Trường hợp role không hợp lệ
+                            ViewBag.LoginFail = "Invalid role. Please contact administrator.";
+                            return View("Login");
+                        }
+                    }
+                    else if (status == "No")
+                    {
+                        ViewBag.LoginFail = "Your account has not been approved.";
+                        return View("Login");
+                    }
+                    else if (status == "Lock")
+                    {
+                        ViewBag.LoginFail = "Your account has been locked.";
+                        return View("Login");
+                    }
                 }
                 else
                 {
-                    // Trường hợp role không hợp lệ
-                    ViewBag.LoginFail = "Invalid role. Please contact administrator.";
+                    ViewBag.LoginFail = "Invalid account status.";
                     return View("Login");
                 }
             }
@@ -120,6 +169,21 @@ namespace ProjectFClean.Controllers
                 ViewBag.LoginFail = "Login failed. Try again.";
                 return View("Login");
             }
+            ViewBag.LoginFail = "Login failed. Try again.";
+            return View("Login");
+        }
+        public ActionResult AccountDetail(int id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Account account = db.Accounts.Find(id);
+            if (account == null)
+            {
+                return HttpNotFound();
+            }
+            return View(account);
         }
 
     }

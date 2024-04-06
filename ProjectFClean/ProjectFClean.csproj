@@ -147,6 +147,12 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
+    <Reference Include="PagedList, Version=1.17.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\PagedList.1.17.0.0\lib\net40\PagedList.dll</HintPath>
+    </Reference>
+    <Reference Include="PagedList.Mvc, Version=4.5.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\PagedList.Mvc.4.5.0.0\lib\net40\PagedList.Mvc.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.AppContext, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.AppContext.4.3.0\lib\net463\System.AppContext.dll</HintPath>
@@ -386,9 +392,10 @@
     <Compile Include="Controllers\ContactController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\HousekeepersController.cs" />
+    <Compile Include="Controllers\NotificationController.cs" />
     <Compile Include="Controllers\PostsController.cs" />
     <Compile Include="Controllers\RentersController.cs" />
-    <Compile Include="Controllers\TransactionController.cs" />
+    <Compile Include="Controllers\TransactionsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -396,6 +403,9 @@
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Admin.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Apply.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Compact.cs">
@@ -435,6 +445,12 @@
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Service.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\sysdiagram.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Transaction.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -778,6 +794,7 @@
     <Content Include="AdminAcc\modules\zingchart-yx.min.js" />
     <Content Include="AdminAcc\modules\zingchart-zoom.min.js" />
     <Content Include="AdminAcc\style.css" />
+    <Content Include="Content\PagedList.css" />
     <Content Include="img\user.jpg" />
     <Content Include="lib\chart\chart.min.js" />
     <Content Include="lib\tempusdominus\css\tempusdominus-bootstrap-4.css" />
@@ -810,8 +827,8 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
-    <Content Include="img\about-2.jpg" />
-    <Content Include="img\about-3.jpg" />
+    <Content Include="img\5.jpg" />
+    <Content Include="img\6.jpg" />
     <Content Include="img\about-4.jpg" />
     <Content Include="img\carousel-1.jpg" />
     <Content Include="img\carousel-2.jpg" />
@@ -822,10 +839,10 @@
     <Content Include="img\com-logo-5.jpg" />
     <Content Include="img\slider1.jpg" />
     <Content Include="img\slider2.jpg" />
-    <Content Include="img\testimonial-1.jpg" />
-    <Content Include="img\testimonial-2.jpg" />
-    <Content Include="img\testimonial-3.jpg" />
-    <Content Include="img\testimonial-4.jpg" />
+    <Content Include="img\1.jpg" />
+    <Content Include="img\2.jpg" />
+    <Content Include="img\3.jpg" />
+    <Content Include="img\4.jpg" />
     <Content Include="js\global.js" />
     <Content Include="js\main.js" />
     <Content Include="lib\animate\animate.css" />
@@ -930,7 +947,6 @@
       <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Views\Web.config" />
-    <Content Include="Views\Home\Index.cshtml" />
     <Content Include="scss\bootstrap.scss" />
     <Content Include="scss\bootstrap\scss\bootstrap-grid.scss" />
     <Content Include="scss\bootstrap\scss\bootstrap-reboot.scss" />
@@ -1014,8 +1030,6 @@
     <Content Include="scss\bootstrap\scss\_utilities.scss" />
     <Content Include="scss\bootstrap\scss\_variables.scss" />
     <Content Include="Views\Contact\Index.cshtml" />
-    <Content Include="Views\Accounts\Login.cshtml" />
-    <Content Include="Views\Accounts\Register.cshtml" />
     <Content Include="vendor\font-awesome-4.7\fonts\fontawesome-webfont.eot" />
     <Content Include="vendor\font-awesome-4.7\fonts\fontawesome-webfont.ttf" />
     <Content Include="vendor\font-awesome-4.7\fonts\fontawesome-webfont.woff" />
@@ -1027,32 +1041,37 @@
     <Content Include="vendor\mdi-font\fonts\Material-Design-Iconic-Font.woff2" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Admin\Index.cshtml" />
-    <Content Include="Views\Accounts\LoginForm.cshtml" />
-    <Content Include="Views\Shared\_LayoutAdmin.cshtml" />
-    <Content Include="Views\Admin\User.cshtml" />
     <Content Include="Views\Shared\_LayoutPage.cshtml" />
     <Content Include="Views\Shared\_LayoutDetails.cshtml" />
+    <Content Include="Views\Housekeepers\Index.cshtml" />
+    <Content Include="Views\Renters\Index.cshtml" />
+    <Content Include="Views\Transactions\Create.cshtml" />
+    <Content Include="Views\Transactions\Delete.cshtml" />
+    <Content Include="Views\Transactions\Details.cshtml" />
+    <Content Include="Views\Transactions\Edit.cshtml" />
+    <Content Include="Views\Transactions\Index.cshtml" />
     <Content Include="Views\Posts\Create.cshtml" />
-    <Content Include="Views\Posts\Delete.cshtml" />
     <Content Include="Views\Posts\Details.cshtml" />
     <Content Include="Views\Posts\Edit.cshtml" />
     <Content Include="Views\Posts\Index.cshtml" />
-    <Content Include="Views\Shared\_HousekeeperList.cshtml" />
     <Content Include="Views\Home\DetailsHousekeeper.cshtml" />
-    <Content Include="Views\Housekeepers\Create.cshtml" />
-    <Content Include="Views\Housekeepers\Delete.cshtml" />
-    <Content Include="Views\Housekeepers\Details.cshtml" />
-    <Content Include="Views\Housekeepers\Edit.cshtml" />
-    <Content Include="Views\Housekeepers\Index.cshtml" />
-    <Content Include="Views\Renters\Create.cshtml" />
-    <Content Include="Views\Renters\Delete.cshtml" />
-    <Content Include="Views\Renters\Details.cshtml" />
-    <Content Include="Views\Renters\Edit.cshtml" />
-    <Content Include="Views\Renters\Index.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Shared\_HousekeeperList.cshtml" />
+    <Content Include="Views\Accounts\Login.cshtml" />
+    <Content Include="Views\Accounts\LoginForm.cshtml" />
+    <Content Include="Views\Accounts\Register.cshtml" />
+    <Content Include="Views\Admin\AccountDetail.cshtml" />
+    <Content Include="Views\Admin\Delete.cshtml" />
+    <Content Include="Views\Admin\Edit.cshtml" />
+    <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\Admin\LockAcc.cshtml" />
+    <Content Include="Views\Admin\User.cshtml" />
+    <Content Include="Views\Admin\Verification.cshtml" />
+    <Content Include="Views\Shared\_LayoutAdmin.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Notification\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

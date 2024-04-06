@@ -2,122 +2,157 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using PagedList.Mvc;
+using PagedList;
+using System.Web.DynamicData;
+using System.Data.Entity.Validation;
+using System.Runtime.Remoting.Messaging;
+
 
 namespace ProjectFClean.Controllers
 {
     public class AdminController : Controller
     {
-        ProjectFCleanEntities2 db = new ProjectFCleanEntities2();
+        ProjectFCleanEntities6 db = new ProjectFCleanEntities6();
         // GET: Admin
+        public List<Account> accounts = new List<Account>();
+
+        // GET: Admin
+        //    [Authorize(Roles = "Admin")]
         public ActionResult Index()
         {
             return View();
         }
-
-        public ActionResult User()
-        {
-            return View();
-        }
-
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // Action để xử lý tạo mới dữ liệu
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(Account account)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Accounts.Add(account);
-                db.SaveChanges();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(account);
-        }
-
-        // Action để hiển thị form cập nhật
-        public ActionResult Edit(int id)
-        {
-            if (id == null)
-            {
-                return View();
-            }
-
-            var account = db.Accounts.Find(id);
-            if (account == null)
-            {
-                return View();
-            }
-
-            return View(account);
-        }
-
-        // Action để xử lý cập nhật dữ liệu
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, Account account)
-        {
-            if (id != account.AccountID)
-            {
-                return View();
-            }
-
-            if (ModelState.IsValid)
-            {
-                db.Accounts.Add(account);
-                db.SaveChanges();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(account);
-        }
-
-        // Action để hiển thị chi tiết tài khoản
-        public ActionResult Details(int id)
-        {
-            if (id == null)
-            {
-                return View();
-            }
-
-            var account = db.Accounts.FirstOrDefault(m => m.AccountID == id);
-            if (account == null)
-            {
-                return View();
-            }
-
-            return View(account);
-        }
-
-        // Action để xoá tài khoản
+        //     [Authorize(Roles = "Admin")]
+        [HttpGet]
         public ActionResult Delete(int id)
         {
-            if (id == null)
-            {
-                return View();
-            }
-
-            var account = db.Accounts.FirstOrDefault(m => m.AccountID == id);
+            Account account = db.Accounts.SingleOrDefault(n => n.AccountID == id);
+            ViewBag.AccountID = account.AccountID;
             if (account == null)
             {
-                return View();
+                Response.StatusCode = 404;
+                return null;
             }
-
             return View(account);
         }
-
+        //     [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            var account = db.Accounts.Find(id);
+
+            var renters = db.Renters.Where(r => r.AccountID == id);
+            db.Renters.RemoveRange(renters);
+
+
+            Account account = db.Accounts.SingleOrDefault(n => n.AccountID == id);
+            if (account == null)
+            {
+                Response.StatusCode = 404;
+                return null;
+            }
             db.Accounts.Remove(account);
             db.SaveChanges();
-            return RedirectToAction(nameof(Index));
+
+            return RedirectToAction("User");
+        }
+        //    [Authorize(Roles = "Admin")]
+        public ActionResult Edit(int id)
+        {
+            Account account = db.Accounts.SingleOrDefault(n => n.AccountID == id);
+            if (account == null)
+            {
+                Response.StatusCode = 404;
+                return null;
+            }
+            return View(account);
+        }
+        //    [Authorize(Roles = "Admin")]
+        public ActionResult User(int? page)
+        {
+            int pageNumber = page ?? 1;
+            int pageSize = 7;
+
+            var approvedAccounts = db.Accounts.Where(a => a.Approve == "Yes").OrderBy(n => n.AccountID).ToPagedList(pageNumber, pageSize);
+            return View("User", approvedAccounts);
+        }
+        //    [Authorize(Roles = "Admin")]
+        public ActionResult Verification()
+        {
+            var accountsWithNoApprove = db.Accounts.Where(a => a.Approve == "No").OrderBy(n => n.AccountID).ToList();
+
+            return View(accountsWithNoApprove);
+        }
+        //     [Authorize(Roles = "Admin")]
+        public ActionResult VeriConfirm(int id = 0)
+        {
+            var account = db.Accounts.SingleOrDefault(n => n.AccountID == id);
+
+            if (account == null)
+            {
+                return HttpNotFound();
+            }
+
+            account.Approve = "Yes";
+            db.SaveChanges();
+            return RedirectToAction("Verification");
+        }
+
+        //      [Authorize(Roles = "Admin")]
+        public ActionResult AccountDetail(int id = 0)
+        {
+            var account = db.Accounts.SingleOrDefault(n => n.AccountID == id);
+
+            if (account == null)
+            {
+                return HttpNotFound();
+            }
+
+            var renterDetail = db.Renters.FirstOrDefault(r => r.AccountID == id);
+            var housekeeperDetail = db.Housekeepers.FirstOrDefault(h => h.AccountID == id);
+
+            ViewBag.RenterDetail = renterDetail;
+            ViewBag.HousekeeperDetail = housekeeperDetail;
+
+            return View("AccountDetail", account);
+        }
+        //       [Authorize(Roles = "Admin")]
+        public ActionResult LockAcc()
+        {
+            var accountsWithNoApprove = db.Accounts.Where(a => a.Approve == "Lock").OrderBy(n => n.AccountID).ToList();
+
+            return View(accountsWithNoApprove);
+        }
+        //       [Authorize(Roles = "Admin")]
+        public ActionResult Lock(int id = 0)
+        {
+            var account = db.Accounts.SingleOrDefault(n => n.AccountID == id);
+
+            if (account == null)
+            {
+                return HttpNotFound();
+            }
+
+            account.Approve = "Lock";
+            db.SaveChanges();
+            return RedirectToAction("User");
+        }
+        //        [Authorize(Roles = "Admin")]
+        public ActionResult UnLock(int id = 0)
+        {
+            var account = db.Accounts.SingleOrDefault(n => n.AccountID == id);
+
+            if (account == null)
+            {
+                return HttpNotFound();
+            }
+
+            account.Approve = "Yes";
+            db.SaveChanges();
+            return RedirectToAction("LockAcc");
         }
     }
 }

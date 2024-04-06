@@ -12,13 +12,22 @@ namespace ProjectFClean.Controllers
 {
     public class RentersController : Controller
     {
-        private ProjectFCleanEntities2 db = new ProjectFCleanEntities2();
+        private ProjectFCleanEntities6 db = new ProjectFCleanEntities6();
 
         // GET: Renters
         public ActionResult Index()
         {
-            var renter = db.Renters.Include(r => r.Account);
-            return View(renter.ToList());
+            var account = Session["Account"] as ProjectFClean.Models.Account;
+            var renters = db.Renters.ToList();
+            if(account != null && renters != null)
+            {
+                var renter = renters.SingleOrDefault(r => r.RID == account.AccountID);
+                if(renter != null)
+                {
+                    return View(renter);
+                }
+            }
+            return RedirectToAction("Login","Accounts");
         }
 
         // GET: Renters/Details/5
@@ -81,21 +90,42 @@ namespace ProjectFClean.Controllers
         [HttpPost, ActionName("UpdateProfile")]
         public ActionResult UpdateProfile(FormCollection form)
         {
+            
+            var idStr = form["Id"];
+            string[] parts = idStr.Split(',');
+
+            int a, b;
+            int.TryParse(parts[0].Trim(), out a);
+            int.TryParse(parts[1].Trim(), out b);
+          
+            var name = form["Name"];
+            var email = form["Email"];
+            var phone = form["Phone"];
+
+           
+            var account = db.Accounts.FirstOrDefault(p => p.AccountID == a);
+
+            if (account != null)
+            {
+                account.Email = email;
+                account.Phone = phone;
+                account.Name = name;
+
+                db.Entry(account).State = EntityState.Modified;
+                Session["Account"] = account;
+            }
+
+            db.SaveChanges();
 
             // Extracting values from the form
             // Form chứa một khối các data => cách lấy data của từng đối tượng là form["tên đối tượng] nhưng dạng nguyên bảng của nó ( kiểu dữ liệu ) -> string
-            var ridStr = form["Id"];
+            
 
-            int id;
-            // Vì nguyên bản là string nên tuổi nó đang là string -> cần parse qua int => khi parse sẽ có khả năng lỗi ( ví dụ a -> Int.parse(a) -> lỗi nên cần check lỗi như dưới
-            if (!int.TryParse(ridStr, out id))
-            {
-                return RedirectToAction("Error");
-            }
+           
 
             var address = form["Address"];
 
-            var renter = db.Renters.FirstOrDefault(p => p.RID == id);
+            var renter = db.Renters.FirstOrDefault(p => p.RID == b);
 
             if (renter != null)
             {
@@ -112,37 +142,7 @@ namespace ProjectFClean.Controllers
 
         }
 
-        public ActionResult UpdateAccount(FormCollection form)
-        {
-            var idStr = form["Id"];
-            var name = form["Name"];
-            var email = form["Email"];
-            var phone = form["Phone"];
-
-            int id;
-
-            if (!int.TryParse(idStr, out id))
-            {
-                return RedirectToAction("Error");
-            }
-            var account = db.Accounts.FirstOrDefault(p => p.AccountID == id);
-
-            if (account != null)
-            {
-                account.Email = email;
-                account.Phone = phone;
-                account.Name = name;
-
-                db.Entry(account).State = EntityState.Modified;
-                Session["Account"] = account;
-            }
-
-            db.SaveChanges();
-            return RedirectToAction("Index");
-
-
-
-        }
+       
 
 
 

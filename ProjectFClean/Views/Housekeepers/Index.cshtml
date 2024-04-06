@@ -1,4 +1,10 @@
-﻿@{
+﻿@model ProjectFClean.Models.Housekeeper
+
+@{
+    var account = Session["Account"] as ProjectFClean.Models.Account;
+    var houseKeepers = Model as ProjectFClean.Models.Housekeeper;
+}
+@{
     ViewData["Title"] = "Account settings - Account";
 }
 
@@ -38,8 +44,8 @@
 
     <!-- Spinner End -->
     <!-- Navbar Start -->
-    @{var account = Session["Account"] as ProjectFClean.Models.Account;}
-    @{var houseKeepers = Session["Housekeeper"] as ProjectFClean.Models.Housekeeper;}
+    @*@{var account = Session["Account"] as ProjectFClean.Models.Account;}*@
+
     <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
         <a href="index.html" class="navbar-brand d-flex align-items-center text-center py-0 px-4 px-lg-5">
             <h1 class="m-0 text-primary">FClean</h1>
@@ -61,7 +67,7 @@
             @{
                 if (account == null)
                 {
-                    <a href="~/Home/Login" class="nav-item nav-link"><i class="fa-solid fa-sign-in-alt"></i>Login</a>
+                    <a href="~/Accounts/Login" class="nav-item nav-link"><i class="fa-solid fa-sign-in-alt"></i>Login</a>
                     <a href="~/Accounts/RegisterRenter" class="nav-item nav-link"><i class="fa-solid fa-user-plus"></i>Register</a>
                 }
             }
@@ -82,296 +88,333 @@
 
 
     <div class="row">
-        <div class="col-md-12">
-            <div class="card mb-4">
-                <h5 class="card-header">Profile Details / @account.Name</h5>
-                <!-- Account -->
-                <div class="card-body">
-                    <form action="/Housekeepers/ChangeAvt" method="post" enctype="multipart/form-data">
-
-                        <div class="d-flex align-ite    ms-start align-items-sm-center gap-4">
-                            @{
-                                var imagePath = "~/img/imgH/" + account.Name + ".png";
-                            }
-
-                            <img src="@Url.Content(imagePath)" alt="user-avatar" class="d-block rounded" height="100" width="100" id="uploadedAvatar" />
-                            <div class="button-wrapper">
-
-                                <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
-                                    <span class="d-none d-sm-block">Upload new photo</span>
-                                    <i class="bx bx-upload d-block d-sm-none"></i>
-                                    <input type="file" id="upload" class="account-file-input" name="newAvatar" hidden accept="image/png, image/jpeg" />
-                                </label>
-                                <button type="button" class="btn btn-outline-secondary account-image-reset mb-4">
-                                    <i class="bx bx-reset d-block d-sm-none"></i>
-                                    <span class="d-none d-sm-block">Reset</span>
-                                </button>
-
-                                <p class="text-muted mb-0">Allowed JPG, GIF or PNG. Max size of 800K</p>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <hr class="my-0">
-                <div class="card">
-                    <h5 class="card-header">Account Setting</h5>
+        @if (account != null)
+        {
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <h5 class="card-header">Profile Details / @account.Name</h5>
+                    <!-- Account -->
                     <div class="card-body">
+                        <form action="/Housekeepers/ChangeAvt" method="post" enctype="multipart/form-data">
+
+                            <div class="d-flex align-items-start align-items-sm-center gap-4">
+                                @{
+                                    var imagePath = "~/img/" + account.AccountID + ".jpg";
+                                }
+                                @{
+                                    // Sử dụng account.ImgAvatarID nếu có, nếu không, fallback về account.AccountID
+                                    var avatarId = account.ImgAvatarID;
+                                    var avatarImagePath = "~/img/" + avatarId + ".jpg";
+                                }
+                                <img src="@Url.Content(imagePath)" alt="user-avatar" class="d-block rounded" height="100" width="100" id="uploadedAvatar" />
+                                @*<img src="@Url.Content(imagePath)" alt="user-avatar" class="d-block rounded" height="100" width="100" id="uploadedAvatar" />*@
+                                <div class="button-wrapper">
+
+                                    <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
+                                        <span class="d-none d-sm-block">Upload new photo</span>
+                                        <i class="bx bx-upload d-block d-sm-none"></i>
+                                        <input type="file" id="upload" class="account-file-input" name="newAvatar" hidden accept="img/png, img/jpeg" />
+                                    </label>
+                                    <button type="button" class="btn btn-outline-secondary account-image-reset mb-4">
+                                        <i class="bx bx-reset d-block d-sm-none"></i>
+                                        <span class="d-none d-sm-block">Reset</span>
+                                    </button>
+
+                                    <p class="text-muted mb-0">Allowed JPG, GIF or PNG. Max size of 800K</p>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <hr class="my-0">
+                    <div class="card">
+                        <h5 class="card-header">Account Setting</h5>
                         <div class="card-body">
+                            <div class="card-body">
 
-                            <form action="@Url.Action("UpdateAccount", "Housekeepers")" method="post">
+                                <form action="@Url.Action("UpdateProfile", "Housekeepers")" method="post">
 
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" id="Id" value="@account.AccountID" name="Id" />
-                                <div class="row">
-
-
-                                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                                    <div class="mb-3 col-md-6">
-                                        @Html.LabelFor(model => account.Name, htmlAttributes: new { @class = "control-label col-md-2" })
-                                        <div>
-                                            <input type="text" id="Name" name="Name" value="@account.Name" class="form-control" required />
-                                            @Html.ValidationMessageFor(model => account.Name, "", new { @class = "text-danger" })
-                                        </div>
-
-                                    </div>
-
-                                    <div class="mb-3 col-md-6">
-                                        @Html.LabelFor(model => account.Role, htmlAttributes: new { @class = "control-label col-md-2" })
-                                        <div>
-                                            @Html.EditorFor(model => account.Role, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                        </div>
-
-                                    </div>
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" id="Id" value="@account.AccountID" name="Id" />
+                                    <div class="row">
 
 
-                                    <div class="mb-3 col-md-6">
-                                        @Html.LabelFor(model => account.Email, htmlAttributes: new { @class = "control-label col-md-2" })
-                                        <div class="">
-                                            <input type="text" id="Email" name="Email" value="@account.Email" class="form-control" />
-                                            @Html.ValidationMessageFor(model => account.Email, "", new { @class = "text-danger" })
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-3 col-md-6">
-                                        @Html.LabelFor(model => account.Phone, htmlAttributes: new { @class = "control-label col-md-2" })
-                                        <div class="">
-                                            <div class="input-group">
-                                                <span class="input-group-text">+84</span>
-                                                <input type="text" id="Phone" name="Phone" value="@account.Phone" class="form-control" pattern="\[0-9]{9}" title="Please enter a valid phone number code +84 and 10 digits." />
+                                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                        <div class="mb-3 col-md-6">
+                                            @Html.LabelFor(model => account.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                                            <div>
+                                                <input type="text" id="Name" name="Name" value="@account.Name" class="form-control" required />
+                                                @Html.ValidationMessageFor(model => account.Name, "", new { @class = "text-danger" })
                                             </div>
-                                            @Html.ValidationMessageFor(model => account.Phone, "", new { @class = "text-danger" })
+
                                         </div>
+
+                                        <div class="mb-3 col-md-6">
+                                            @Html.LabelFor(model => account.Role, htmlAttributes: new { @class = "control-label col-md-2" })
+                                            <div>
+                                                @Html.EditorFor(model => account.Role, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                            </div>
+
+                                        </div>
+
+
+                                        <div class="mb-3 col-md-6">
+                                            @Html.LabelFor(model => account.Email, htmlAttributes: new { @class = "control-label col-md-2" })
+                                            <div class="">
+                                                <input type="text" id="Email" name="Email" value="@account.Email" class="form-control" />
+                                                @Html.ValidationMessageFor(model => account.Email, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3 col-md-6">
+                                            @Html.LabelFor(model => account.Phone, htmlAttributes: new { @class = "control-label col-md-2" })
+                                            <div class="">
+                                                <div class="input-group">
+                                                    <span class="input-group-text">+84</span>
+                                                    <input type="text" id="Phone" name="Phone" value="@account.Phone" class="form-control" pattern="\[0-9]{9}" title="Please enter a valid phone number code +84 and 10 digits." />
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+
+
+                                        @*<div class="mt-2">
+                                                <button type="submit" value="UpdateAccount" class="btn btn-primary me-2">Save changes</button>
+                                                <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+                                            </div>*@
+
                                     </div>
 
 
 
-                                    <div class="mt-2">
-                                        <button type="submit" value="UpdateAccount" class="btn btn-primary me-2">Save changes</button>
-                                        <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+                                    <input type="hidden" id="Id" value="@Model.HID" name="HId" />
+                                    <div class="row form-horizontal">
+                                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                                        <div class="mb-3 col-md-6 form-group">
+                                            <label for="Age" class="control-label col-md-2">Age</label>
+                                            <div>
+                                                <input type="number" id="Age" value="@houseKeepers.Age" name="Age" class="form-control" min="18" max="100" />
+                                                @Html.ValidationMessageFor(model => houseKeepers.Age, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3 col-md-6 form-group">
+                                            <label for="Gender" class="control-label col-md-2">Gender</label>
+                                            <div>
+                                                <select class="form-control" id="Gender" name="Gender" required>
+                                                    <option value="" @if (houseKeepers.Gender == "") { <text> selected</text> }>Select</option>
+                                                    <option value="Male" @if (houseKeepers.Gender == "Male") { <text> selected</text> }>Male</option>
+                                                    <option value="Female" @if (houseKeepers.Gender == "Female") { <text> selected</text> }>Female</option>
+                                                </select>
+                                                @Html.ValidationMessageFor(model => houseKeepers.Gender, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3 col-md-6 form-group">
+                                            <label for="Price" class="control-label col-md-2">Price</label>
+                                            <div>
+                                                <input type="number" id="Price" value="@houseKeepers.Price" name="Price" class="form-control" min="0" step="0.01" />
+                                                @Html.ValidationMessageFor(model => houseKeepers.Price, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3 col-md-6 form-group">
+                                            <label for="Skill" class="control-label col-md-2">Skill</label>
+                                            <div>
+                                                <input type="text" id="Skill" value="@houseKeepers.Skill" name="Skill" class="form-control" maxlength="50" />
+                                                @Html.ValidationMessageFor(model => houseKeepers.Skill, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3 col-md-6 form-group">
+                                            <label for="Experiment" class="control-label col-md-2">Experiment</label>
+                                            <div>
+                                                <input type="text" id="Experiment" value="@houseKeepers.Experiment" name="Experiment" class="form-control" />
+                                                @Html.ValidationMessageFor(model => houseKeepers.Experiment, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3 col-md-6 form-group">
+                                            <label for="Description" class="control-label col-md-2">Description</label>
+                                            <div>
+                                                <input type="text" id="Description" name="Description" value="@houseKeepers.Description" class="form-control" />
+                                                @Html.ValidationMessageFor(model => houseKeepers.Description, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+
+
+
+                                        <div class="mb-3 col-md-6 form-group">
+                                            <label for="Address" value="@houseKeepers.Address" class="control-label col-md-2">Address</label>
+                                            <div>
+                                                <select id="Address" name="Address" class="form-control">
+                                                    <option value="">Select Province</option>
+                                                    <option value="An Giang" @(houseKeepers != null && houseKeepers.Address == "An Giang" ? "selected" : "")>An Giang</option>
+                                                    <option value="Bà Rịa - Vũng Tàu" @(houseKeepers != null && houseKeepers.Address == "Bà Rịa - Vũng Tàu" ? "selected" : "")>Bà Rịa - Vũng Tàu</option>
+                                                    <option value="Bắc Giang" @(houseKeepers != null && houseKeepers.Address == "Bắc Giang" ? "selected" : "")>Bắc Giang</option>
+                                                    <option value="Bắc Kạn" @(houseKeepers != null && houseKeepers.Address == "Bắc Kạn" ? "selected" : "")>Bắc Kạn</option>
+                                                    <option value="Bạc Liêu" @(houseKeepers != null && houseKeepers.Address == "Bạc Liêu" ? "selected" : "")>Bạc Liêu</option>
+                                                    <option value="Bắc Ninh" @(houseKeepers != null && houseKeepers.Address == "Bắc Ninh" ? "selected" : "")>Bắc Ninh</option>
+                                                    <option value="Bến Tre" @(houseKeepers != null && houseKeepers.Address == "Bến Tre" ? "selected" : "")>Bến Tre</option>
+                                                    <option value="Bình Định" @(houseKeepers != null && houseKeepers.Address == "Bình Định" ? "selected" : "")>Bình Định</option>
+                                                    <option value="Bình Dương" @(houseKeepers != null && houseKeepers.Address == "Bình Dương" ? "selected" : "")>Bình Dương</option>
+                                                    <option value="Bình Phước" @(houseKeepers != null && houseKeepers.Address == "Bình Phước" ? "selected" : "")>Bình Phước</option>
+                                                    <option value="Bình Thuận" @(houseKeepers != null && houseKeepers.Address == "Bình Thuận" ? "selected" : "")>Bình Thuận</option>
+                                                    <option value="Cà Mau" @(houseKeepers != null && houseKeepers.Address == "Cà Mau" ? "selected" : "")>Cà Mau</option>
+                                                    <option value="Cần Thơ" @(houseKeepers != null && houseKeepers.Address == "Cần Thơ" ? "selected" : "")>Cần Thơ</option>
+                                                    <option value="Cao Bằng" @(houseKeepers != null && houseKeepers.Address == "Cao Bằng" ? "selected" : "")>Cao Bằng</option>
+                                                    <option value="Đà Nẵng" @(houseKeepers != null && houseKeepers.Address == "Đà Nẵng" ? "selected" : "")>Đà Nẵng</option>
+                                                    <option value="Đắk Lắk" @(houseKeepers != null && houseKeepers.Address == "Đắk Lắk" ? "selected" : "")>Đắk Lắk</option>
+                                                    <option value="Đắk Nông" @(houseKeepers != null && houseKeepers.Address == "Đắk Nông" ? "selected" : "")>Đắk Nông</option>
+                                                    <option value="Điện Biên" @(houseKeepers != null && houseKeepers.Address == "Điện Biên" ? "selected" : "")>Điện Biên</option>
+                                                    <option value="Đồng Nai" @(houseKeepers != null && houseKeepers.Address == "Đồng Nai" ? "selected" : "")>Đồng Nai</option>
+                                                    <option value="Đồng Tháp" @(houseKeepers != null && houseKeepers.Address == "Đồng Tháp" ? "selected" : "")>Đồng Tháp</option>
+                                                    <option value="Gia Lai" @(houseKeepers != null && houseKeepers.Address == "Gia Lai" ? "selected" : "")>Gia Lai</option>
+                                                    <option value="Hà Giang" @(houseKeepers != null && houseKeepers.Address == "Hà Giang" ? "selected" : "")>Hà Giang</option>
+                                                    <option value="Hà Nam" @(houseKeepers != null && houseKeepers.Address == "Hà Nam" ? "selected" : "")>Hà Nam</option>
+                                                    <option value="Hà Nội" @(houseKeepers != null && houseKeepers.Address == "Hà Nội" ? "selected" : "")>Hà Nội</option>
+                                                    <option value="Hà Tĩnh" @(houseKeepers != null && houseKeepers.Address == "Hà Tĩnh" ? "selected" : "")>Hà Tĩnh</option>
+                                                    <option value="Hải Dương" @(houseKeepers != null && houseKeepers.Address == "Hải Dương" ? "selected" : "")>Hải Dương</option>
+                                                    <option value="Hải Phòng" @(houseKeepers != null && houseKeepers.Address == "Hải Phòng" ? "selected" : "")>Hải Phòng</option>
+                                                    <option value="Hậu Giang" @(houseKeepers != null && houseKeepers.Address == "Hậu Giang" ? "selected" : "")>Hậu Giang</option>
+                                                    <option value="Hòa Bình" @(houseKeepers != null && houseKeepers.Address == "Hòa Bình" ? "selected" : "")>Hòa Bình</option>
+                                                    <option value="Hưng Yên" @(houseKeepers != null && houseKeepers.Address == "Hưng Yên" ? "selected" : "")>Hưng Yên</option>
+                                                    <option value="Khánh Hòa" @(houseKeepers != null && houseKeepers.Address == "Khánh Hòa" ? "selected" : "")>Khánh Hòa</option>
+                                                    <option value="Kiên Giang" @(houseKeepers != null && houseKeepers.Address == "Kiên Giang" ? "selected" : "")>Kiên Giang</option>
+                                                    <option value="Kon Tum" @(houseKeepers != null && houseKeepers.Address == "Kon Tum" ? "selected" : "")>Kon Tum</option>
+                                                    <option value="Lai Châu" @(houseKeepers != null && houseKeepers.Address == "Lai Châu" ? "selected" : "")>Lai Châu</option>
+                                                    <option value="Lâm Đồng" @(houseKeepers != null && houseKeepers.Address == "Lâm Đồng" ? "selected" : "")>Lâm Đồng</option>
+                                                    <option value="Lạng Sơn" @(houseKeepers != null && houseKeepers.Address == "Lạng Sơn" ? "selected" : "")>Lạng Sơn</option>
+                                                    <option value="Lào Cai" @(houseKeepers != null && houseKeepers.Address == "Lào Cai" ? "selected" : "")>Lào Cai</option>
+                                                    <option value="Long An" @(houseKeepers != null && houseKeepers.Address == "Long An" ? "selected" : "")>Long An</option>
+                                                    <option value="Nam Định" @(houseKeepers != null && houseKeepers.Address == "Nam Định" ? "selected" : "")>Nam Định</option>
+                                                    <option value="Nghệ An" @(houseKeepers != null && houseKeepers.Address == "Nghệ An" ? "selected" : "")>Nghệ An</option>
+                                                    <option value="Ninh Bình" @(houseKeepers != null && houseKeepers.Address == "Ninh Bình" ? "selected" : "")>Ninh Bình</option>
+                                                    <option value="Ninh Thuận" @(houseKeepers != null && houseKeepers.Address == "Ninh Thuận" ? "selected" : "")>Ninh Thuận</option>
+                                                    <option value="Phú Thọ" @(houseKeepers != null && houseKeepers.Address == "Phú Thọ" ? "selected" : "")>Phú Thọ</option>
+                                                    <option value="Phú Yên" @(houseKeepers != null && houseKeepers.Address == "Phú Yên" ? "selected" : "")>Phú Yên</option>
+                                                    <option value="Quảng Bình" @(houseKeepers != null && houseKeepers.Address == "Quảng Bình" ? "selected" : "")>Quảng Bình</option>
+                                                    <option value="Quảng Nam" @(houseKeepers != null && houseKeepers.Address == "Quảng Nam" ? "selected" : "")>Quảng Nam</option>
+                                                    <option value="Quảng Ngãi" @(houseKeepers != null && houseKeepers.Address == "Quảng Ngãi" ? "selected" : "")>Quảng Ngãi</option>
+                                                    <option value="Quảng Ninh" @(houseKeepers != null && houseKeepers.Address == "Quảng Ninh" ? "selected" : "")>Quảng Ninh</option>
+                                                    <option value="Quảng Trị" @(houseKeepers != null && houseKeepers.Address == "Quảng Trị" ? "selected" : "")>Quảng Trị</option>
+                                                    <option value="Sóc Trăng" @(houseKeepers != null && houseKeepers.Address == "Sóc Trăng" ? "selected" : "")>Sóc Trăng</option>
+                                                    <option value="Sơn La" @(houseKeepers != null && houseKeepers.Address == "Sơn La" ? "selected" : "")>Sơn La</option>
+                                                    <option value="Tây Ninh" @(houseKeepers != null && houseKeepers.Address == "Tây Ninh" ? "selected" : "")>Tây Ninh</option>
+                                                    <option value="Thái Bình" @(houseKeepers != null && houseKeepers.Address == "Thái Bình" ? "selected" : "")>Thái Bình</option>
+                                                    <option value="Thái Nguyên" @(houseKeepers != null && houseKeepers.Address == "Thái Nguyên" ? "selected" : "")>Thái Nguyên</option>
+                                                    <option value="Thanh Hóa" @(houseKeepers != null && houseKeepers.Address == "Thanh Hóa" ? "selected" : "")>Thanh Hóa</option>
+                                                    <option value="Thừa Thiên Huế" @(houseKeepers != null && houseKeepers.Address == "Thừa Thiên Huế" ? "selected" : "")>Thừa Thiên Huế</option>
+                                                    <option value="Tiền Giang" @(houseKeepers != null && houseKeepers.Address == "Tiền Giang" ? "selected" : "")>Tiền Giang</option>
+                                                    <option value="TP Hồ Chí Minh" @(houseKeepers != null && houseKeepers.Address == "TP Hồ Chí Minh" ? "selected" : "")>TP Hồ Chí Minh</option>
+                                                    <option value="Trà Vinh" @(houseKeepers != null && houseKeepers.Address == "Trà Vinh" ? "selected" : "")>Trà Vinh</option>
+                                                    <option value="Tuyên Quang" @(houseKeepers != null && houseKeepers.Address == "Tuyên Quang" ? "selected" : "")>Tuyên Quang</option>
+                                                    <option value="Vĩnh Long" @(houseKeepers != null && houseKeepers.Address == "Vĩnh Long" ? "selected" : "")>Vĩnh Long</option>
+                                                    <option value="Vĩnh Phúc" @(houseKeepers != null && houseKeepers.Address == "Vĩnh Phúc" ? "selected" : "")>Vĩnh Phúc</option>
+                                                    <option value="Yên Bái" @(houseKeepers != null && houseKeepers.Address == "Yên Bái" ? "selected" : "")>Yên Bái</option>
+                                                </select>
+                                                @Html.ValidationMessageFor(model => houseKeepers.Address, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+
+
+                                        <div class="mt-2">
+
+                                            <button type="submit" value="UpdateProfile" class="btn btn-primary me-2">Save changes</button>
+
+                                            <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+                                        </div>
+
                                     </div>
+                                </form>
 
-                                </div>
-                            </form>
-
-
-                        </div>
-
-                    </div>
-                </div>
-                <h5 class="card-header">Profile Setting</h5>
-                <div class="card-body">
-
-                    <form action="@Url.Action("UpdateProfile", "Housekeepers")" method="post">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" id="Id" value="@houseKeepers.HID" name="Id" />
-                        <div class="row form-horizontal">
-                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-
-                            <div class="mb-3 col-md-6 form-group">
-                                <label for="Age" class="control-label col-md-2">Age</label>
-                                <div>
-                                    <input type="number" id="Age" value="@houseKeepers.Age" name="Age" class="form-control" min="18" max="100" />
-                                    @Html.ValidationMessageFor(model => houseKeepers.Age, "", new { @class = "text-danger" })
-                                </div>
                             </div>
 
-                            <div class="mb-3 col-md-6 form-group">
-                                <label for="Gender" class="control-label col-md-2">Gender</label>
-                                <div>
-                                    <select class="form-control" id="Gender" name="Gender" required>
-                                        <option value="" @if (houseKeepers.Gender == "") { <text> selected</text> }>Select</option>
-                                        <option value="Male" @if (houseKeepers.Gender == "Male") { <text> selected</text> }>Male</option>
-                                        <option value="Female" @if (houseKeepers.Gender == "Female") { <text> selected</text> }>Female</option>
-                                    </select>
-                                    @Html.ValidationMessageFor(model => houseKeepers.Gender, "", new { @class = "text-danger" })
-                                </div>
-                            </div>
-
-                            <div class="mb-3 col-md-6 form-group">
-                                <label for="Price" class="control-label col-md-2">Price</label>
-                                <div>
-                                    <input type="number" id="Price" value="@houseKeepers.Price" name="Price" class="form-control" min="0" step="0.01" />
-                                    @Html.ValidationMessageFor(model => houseKeepers.Price, "", new { @class = "text-danger" })
-                                </div>
-                            </div>
-
-                            <div class="mb-3 col-md-6 form-group">
-                                <label for="Skill" class="control-label col-md-2">Skill</label>
-                                <div>
-                                    <input type="text" id="Skill" value="@houseKeepers.Skill" name="Skill" class="form-control" maxlength="50" />
-                                    @Html.ValidationMessageFor(model => houseKeepers.Skill, "", new { @class = "text-danger" })
-                                </div>
-                            </div>
-
-                            <div class="mb-3 col-md-6 form-group">
-                                <label for="Experiment" class="control-label col-md-2">Experiment</label>
-                                <div>
-                                    <input type="text" id="Experiment" value="@houseKeepers.Experiment" name="Experiment" class="form-control" />
-                                    @Html.ValidationMessageFor(model => houseKeepers.Experiment, "", new { @class = "text-danger" })
-                                </div>
-                            </div>
-
-                            <div class="mb-3 col-md-6 form-group">
-                                <label for="Description" class="control-label col-md-2">Description</label>
-                                <div>
-                                    <input type="text" id="Description" name="Description" value="@houseKeepers.Description" class="form-control" />
-                                    @Html.ValidationMessageFor(model => houseKeepers.Description, "", new { @class = "text-danger" })
-                                </div>
-                            </div>
-
-
-
-                            <div class="mb-3 col-md-6 form-group">
-                                <label for="Address" value="@houseKeepers.Address" class="control-label col-md-2">Address</label>
-                                <div>
-                                    <select id="Address" name="Address" class="form-control">
-                                        <option value="">Select Province</option>
-                                        <option value="An Giang" @(houseKeepers != null && houseKeepers.Address == "An Giang" ? "selected" : "")>An Giang</option>
-                                        <option value="Bà Rịa - Vũng Tàu" @(houseKeepers != null && houseKeepers.Address == "Bà Rịa - Vũng Tàu" ? "selected" : "")>Bà Rịa - Vũng Tàu</option>
-                                        <option value="Bắc Giang" @(houseKeepers != null && houseKeepers.Address == "Bắc Giang" ? "selected" : "")>Bắc Giang</option>
-                                        <option value="Bắc Kạn" @(houseKeepers != null && houseKeepers.Address == "Bắc Kạn" ? "selected" : "")>Bắc Kạn</option>
-                                        <option value="Bạc Liêu" @(houseKeepers != null && houseKeepers.Address == "Bạc Liêu" ? "selected" : "")>Bạc Liêu</option>
-                                        <option value="Bắc Ninh" @(houseKeepers != null && houseKeepers.Address == "Bắc Ninh" ? "selected" : "")>Bắc Ninh</option>
-                                        <option value="Bến Tre" @(houseKeepers != null && houseKeepers.Address == "Bến Tre" ? "selected" : "")>Bến Tre</option>
-                                        <option value="Bình Định" @(houseKeepers != null && houseKeepers.Address == "Bình Định" ? "selected" : "")>Bình Định</option>
-                                        <option value="Bình Dương" @(houseKeepers != null && houseKeepers.Address == "Bình Dương" ? "selected" : "")>Bình Dương</option>
-                                        <option value="Bình Phước" @(houseKeepers != null && houseKeepers.Address == "Bình Phước" ? "selected" : "")>Bình Phước</option>
-                                        <option value="Bình Thuận" @(houseKeepers != null && houseKeepers.Address == "Bình Thuận" ? "selected" : "")>Bình Thuận</option>
-                                        <option value="Cà Mau" @(houseKeepers != null && houseKeepers.Address == "Cà Mau" ? "selected" : "")>Cà Mau</option>
-                                        <option value="Cần Thơ" @(houseKeepers != null && houseKeepers.Address == "Cần Thơ" ? "selected" : "")>Cần Thơ</option>
-                                        <option value="Cao Bằng" @(houseKeepers != null && houseKeepers.Address == "Cao Bằng" ? "selected" : "")>Cao Bằng</option>
-                                        <option value="Đà Nẵng" @(houseKeepers != null && houseKeepers.Address == "Đà Nẵng" ? "selected" : "")>Đà Nẵng</option>
-                                        <option value="Đắk Lắk" @(houseKeepers != null && houseKeepers.Address == "Đắk Lắk" ? "selected" : "")>Đắk Lắk</option>
-                                        <option value="Đắk Nông" @(houseKeepers != null && houseKeepers.Address == "Đắk Nông" ? "selected" : "")>Đắk Nông</option>
-                                        <option value="Điện Biên" @(houseKeepers != null && houseKeepers.Address == "Điện Biên" ? "selected" : "")>Điện Biên</option>
-                                        <option value="Đồng Nai" @(houseKeepers != null && houseKeepers.Address == "Đồng Nai" ? "selected" : "")>Đồng Nai</option>
-                                        <option value="Đồng Tháp" @(houseKeepers != null && houseKeepers.Address == "Đồng Tháp" ? "selected" : "")>Đồng Tháp</option>
-                                        <option value="Gia Lai" @(houseKeepers != null && houseKeepers.Address == "Gia Lai" ? "selected" : "")>Gia Lai</option>
-                                        <option value="Hà Giang" @(houseKeepers != null && houseKeepers.Address == "Hà Giang" ? "selected" : "")>Hà Giang</option>
-                                        <option value="Hà Nam" @(houseKeepers != null && houseKeepers.Address == "Hà Nam" ? "selected" : "")>Hà Nam</option>
-                                        <option value="Hà Nội" @(houseKeepers != null && houseKeepers.Address == "Hà Nội" ? "selected" : "")>Hà Nội</option>
-                                        <option value="Hà Tĩnh" @(houseKeepers != null && houseKeepers.Address == "Hà Tĩnh" ? "selected" : "")>Hà Tĩnh</option>
-                                        <option value="Hải Dương" @(houseKeepers != null && houseKeepers.Address == "Hải Dương" ? "selected" : "")>Hải Dương</option>
-                                        <option value="Hải Phòng" @(houseKeepers != null && houseKeepers.Address == "Hải Phòng" ? "selected" : "")>Hải Phòng</option>
-                                        <option value="Hậu Giang" @(houseKeepers != null && houseKeepers.Address == "Hậu Giang" ? "selected" : "")>Hậu Giang</option>
-                                        <option value="Hòa Bình" @(houseKeepers != null && houseKeepers.Address == "Hòa Bình" ? "selected" : "")>Hòa Bình</option>
-                                        <option value="Hưng Yên" @(houseKeepers != null && houseKeepers.Address == "Hưng Yên" ? "selected" : "")>Hưng Yên</option>
-                                        <option value="Khánh Hòa" @(houseKeepers != null && houseKeepers.Address == "Khánh Hòa" ? "selected" : "")>Khánh Hòa</option>
-                                        <option value="Kiên Giang" @(houseKeepers != null && houseKeepers.Address == "Kiên Giang" ? "selected" : "")>Kiên Giang</option>
-                                        <option value="Kon Tum" @(houseKeepers != null && houseKeepers.Address == "Kon Tum" ? "selected" : "")>Kon Tum</option>
-                                        <option value="Lai Châu" @(houseKeepers != null && houseKeepers.Address == "Lai Châu" ? "selected" : "")>Lai Châu</option>
-                                        <option value="Lâm Đồng" @(houseKeepers != null && houseKeepers.Address == "Lâm Đồng" ? "selected" : "")>Lâm Đồng</option>
-                                        <option value="Lạng Sơn" @(houseKeepers != null && houseKeepers.Address == "Lạng Sơn" ? "selected" : "")>Lạng Sơn</option>
-                                        <option value="Lào Cai" @(houseKeepers != null && houseKeepers.Address == "Lào Cai" ? "selected" : "")>Lào Cai</option>
-                                        <option value="Long An" @(houseKeepers != null && houseKeepers.Address == "Long An" ? "selected" : "")>Long An</option>
-                                        <option value="Nam Định" @(houseKeepers != null && houseKeepers.Address == "Nam Định" ? "selected" : "")>Nam Định</option>
-                                        <option value="Nghệ An" @(houseKeepers != null && houseKeepers.Address == "Nghệ An" ? "selected" : "")>Nghệ An</option>
-                                        <option value="Ninh Bình" @(houseKeepers != null && houseKeepers.Address == "Ninh Bình" ? "selected" : "")>Ninh Bình</option>
-                                        <option value="Ninh Thuận" @(houseKeepers != null && houseKeepers.Address == "Ninh Thuận" ? "selected" : "")>Ninh Thuận</option>
-                                        <option value="Phú Thọ" @(houseKeepers != null && houseKeepers.Address == "Phú Thọ" ? "selected" : "")>Phú Thọ</option>
-                                        <option value="Phú Yên" @(houseKeepers != null && houseKeepers.Address == "Phú Yên" ? "selected" : "")>Phú Yên</option>
-                                        <option value="Quảng Bình" @(houseKeepers != null && houseKeepers.Address == "Quảng Bình" ? "selected" : "")>Quảng Bình</option>
-                                        <option value="Quảng Nam" @(houseKeepers != null && houseKeepers.Address == "Quảng Nam" ? "selected" : "")>Quảng Nam</option>
-                                        <option value="Quảng Ngãi" @(houseKeepers != null && houseKeepers.Address == "Quảng Ngãi" ? "selected" : "")>Quảng Ngãi</option>
-                                        <option value="Quảng Ninh" @(houseKeepers != null && houseKeepers.Address == "Quảng Ninh" ? "selected" : "")>Quảng Ninh</option>
-                                        <option value="Quảng Trị" @(houseKeepers != null && houseKeepers.Address == "Quảng Trị" ? "selected" : "")>Quảng Trị</option>
-                                        <option value="Sóc Trăng" @(houseKeepers != null && houseKeepers.Address == "Sóc Trăng" ? "selected" : "")>Sóc Trăng</option>
-                                        <option value="Sơn La" @(houseKeepers != null && houseKeepers.Address == "Sơn La" ? "selected" : "")>Sơn La</option>
-                                        <option value="Tây Ninh" @(houseKeepers != null && houseKeepers.Address == "Tây Ninh" ? "selected" : "")>Tây Ninh</option>
-                                        <option value="Thái Bình" @(houseKeepers != null && houseKeepers.Address == "Thái Bình" ? "selected" : "")>Thái Bình</option>
-                                        <option value="Thái Nguyên" @(houseKeepers != null && houseKeepers.Address == "Thái Nguyên" ? "selected" : "")>Thái Nguyên</option>
-                                        <option value="Thanh Hóa" @(houseKeepers != null && houseKeepers.Address == "Thanh Hóa" ? "selected" : "")>Thanh Hóa</option>
-                                        <option value="Thừa Thiên Huế" @(houseKeepers != null && houseKeepers.Address == "Thừa Thiên Huế" ? "selected" : "")>Thừa Thiên Huế</option>
-                                        <option value="Tiền Giang" @(houseKeepers != null && houseKeepers.Address == "Tiền Giang" ? "selected" : "")>Tiền Giang</option>
-                                        <option value="TP Hồ Chí Minh" @(houseKeepers != null && houseKeepers.Address == "TP Hồ Chí Minh" ? "selected" : "")>TP Hồ Chí Minh</option>
-                                        <option value="Trà Vinh" @(houseKeepers != null && houseKeepers.Address == "Trà Vinh" ? "selected" : "")>Trà Vinh</option>
-                                        <option value="Tuyên Quang" @(houseKeepers != null && houseKeepers.Address == "Tuyên Quang" ? "selected" : "")>Tuyên Quang</option>
-                                        <option value="Vĩnh Long" @(houseKeepers != null && houseKeepers.Address == "Vĩnh Long" ? "selected" : "")>Vĩnh Long</option>
-                                        <option value="Vĩnh Phúc" @(houseKeepers != null && houseKeepers.Address == "Vĩnh Phúc" ? "selected" : "")>Vĩnh Phúc</option>
-                                        <option value="Yên Bái" @(houseKeepers != null && houseKeepers.Address == "Yên Bái" ? "selected" : "")>Yên Bái</option>
-                                    </select>
-                                    @Html.ValidationMessageFor(model => houseKeepers.Address, "", new { @class = "text-danger" })
-                                </div>
-                            </div>
-
-
-                            <div class="mt-2">
-                                <button type="submit" value="UpdateProfile" class="btn btn-primary me-2">Save changes</button>
-                                <button type="reset" class="btn btn-outline-secondary">Cancel</button>
-                            </div>
-
-                        </div>
-                    </form>
-
-
-
-                </div>
-                <!-- /Account -->
-            </div>
-            <div class="card">
-                <h5 class="card-header">Delete Account</h5>
-                <div class="card-body">
-                    <div class="mb-3 col-12 mb-0">
-                        <div class="alert alert-warning">
-                            <h6 class="alert-heading mb-1">Are you sure you want to delete your account?</h6>
-                            <p class="mb-0">Once you delete your account, there is no going back. Please be certain.</p>
                         </div>
                     </div>
-                    <form id="formAccountDeactivation" onsubmit="return false">
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" type="checkbox" name="accountActivation" id="accountActivation" />
-                            <label class="form-check-label" for="accountActivation">I confirm my account deactivation</label>
+
+                    <!-- /Account -->
+                </div>
+                <div class="card">
+                    <h5 class="card-header">Delete Account</h5>
+                    <div class="card-body">
+                        <div class="mb-3 col-12 mb-0">
+                            <div class="alert alert-warning">
+                                <h6 class="alert-heading mb-1">Are you sure you want to delete your account?</h6>
+                                <p class="mb-0">Once you delete your account, there is no going back. Please be certain.</p>
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-danger deactivate-account">Deactivate Account</button>
-                    </form>
+                        <form id="formAccountDeactivation" onsubmit="return false">
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="accountActivation" id="accountActivation" />
+                                <label class="form-check-label" for="accountActivation">I confirm my account deactivation</label>
+                            </div>
+                            <button type="submit" class="btn btn-danger deactivate-account">Deactivate Account</button>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
+        }
+        else
+        {
+            <div class="col-md-12">
+                <div class="alert alert-danger" role="alert">
+                    Error: User account not found.
+                </div>
+            </div>
+        }
+
     </div>
 </div>
 
+@*@section scripts {
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            $("#upload").on("change", function (e) {
+                if (this.files && this.files[0]) {
+                    var fileType = this.files[0].type;
+                    if (fileType.startsWith("image/")) {
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            document.getElementById('uploadedAvatar').src = e.target.result;
+                        };
+                        reader.readAsDataURL(this.files[0]);
+
+                        // Thực hiện submit form
+                        $(this).closest('form').submit();
+                    } else {
+                        alert("Chỉ chấp nhận tệp tin hình ảnh (jpg, png, gif)!");
+                        $(this).val("");
+                    }
+                }
+            });
+        </script>
+    }*@
 @section scripts {
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        $("#upload").on("change", function (e) {
-            if (this.files && this.files[0]) {
-                var fileType = this.files[0].type;
-                if (fileType.startsWith("image/")) {
-                    var reader = new FileReader();
-                    reader.onload = function (e) {
-                        document.getElementById('uploadedAvatar').src = e.target.result;
-                    };
-                    reader.readAsDataURL(this.files[0]);
-
-                    // Thực hiện submit form
-                    $(this).closest('form').submit();
-                } else {
-                    alert("Chỉ chấp nhận tệp tin hình ảnh (jpg, png, gif)!");
-                    $(this).val("");
+        $(document).ready(function () {
+            $("#upload").on("change", function (e) {
+                if (this.files && this.files[0]) {
+                    var fileType = this.files[0].type;
+                    if (fileType.startsWith("image/")) {
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            $('#uploadedAvatar').attr('src', e.target.result);
+                        };
+                        reader.readAsDataURL(this.files[0]);
+                    } else {
+                        alert("Chỉ chấp nhận tệp tin hình ảnh (jpg, png, gif)!");
+                        $(this).val("");
+                    }
                 }
-            }
+            });
         });
     </script>
 }
- 
+
+
+

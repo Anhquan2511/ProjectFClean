@@ -62,14 +62,23 @@
                             </div>
                         </div>
                         <div class="form-group">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @if (ViewBag.SuccessMessage != null)
+                {
+                    <div class="alert alert-success">
+                        @ViewBag.SuccessMessage
+                    </div>
+                }
+
+            </div>
+                        <div class="form-group">
                             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                            @if (ViewBag.SuccessMessage != null)
+                            @if (ViewBag.LoginFail != null)
                             {
-                                <div class="alert alert-success">
-                                    @ViewBag.SuccessMessage
+                                <div class="alert alert-danger">
+                                    @ViewBag.LoginFail
                                 </div>
                             }
-
                         </div>
                         <div class="p-t-15">
                             <button class="btn btn--radius-2 btn--blue" type="submit">Submit</button>

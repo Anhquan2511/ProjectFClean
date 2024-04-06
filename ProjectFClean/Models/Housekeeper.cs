@@ -19,15 +19,14 @@ namespace ProjectFClean.Models
         {
             this.Compacts = new HashSet<Compact>();
             this.Feedbacks = new HashSet<Feedback>();
-            this.Posts = new HashSet<Post>();
         }
     
         public int HID { get; set; }
-        public int Age { get; set; }
+        public Nullable<int> Age { get; set; }
         public string Gender { get; set; }
         public int Price { get; set; }
         public string Skill { get; set; }
-        public string Experiment { get; set; }
+        public Nullable<int> Experiment { get; set; }
         public string Description { get; set; }
         public decimal Money { get; set; }
         public string Address { get; set; }
@@ -38,7 +37,5 @@ namespace ProjectFClean.Models
         public virtual ICollection<Compact> Compacts { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Feedback> Feedbacks { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Post> Posts { get; set; }
     }
 }

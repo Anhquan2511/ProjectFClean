@@ -1,16 +1,16 @@
 ﻿@model IEnumerable<ProjectFClean.Models.Account>
 
 @{
-    ViewBag.Title = "User";
+    ViewBag.Title = "LockAcc";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<h2>Account management</h2>
+<h2>Locked List</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+<div id="message-container" class="alert" style="display:none;"></div>
+
 <table class="table">
+
     <tr>
         <th>
             @Html.DisplayNameFor(model => model.Name)
@@ -33,8 +33,7 @@
         <th>
             @Html.DisplayNameFor(model => model.Approve)
         </th>
-        <th>CRUD</th>
-        <th>Lock</th>
+        <th></th>
     </tr>
 
     @foreach (var item in Model)
@@ -62,46 +61,38 @@
                 @Html.DisplayFor(modelItem => item.Approve)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.AccountID }) |
-                @Html.ActionLink("Detail", "AccountDetail", new { id = item.AccountID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.AccountID })
-            </td>
-            <td>
-                @*@Html.ActionLink("Lock", "Lock", "Admin", new { id = item.AccountID }, new { @class = "lock-link", data_name = item.Name })*@
-                <a href="/Admin/User" class="lock-btn" data-lock-url="@Url.Action("Lock", "Admin", new { id = item.AccountID })" data-name="@item.Name">
-                    Lock
+                @*@Html.ActionLink("Unlock", "UnLock", "Admin", new { id = item.AccountID }, null)*@
+                <a href="~/Admin/LockAcc" class="unlock-btn" data-lock-url="@Url.Action("UnLock", "Admin", new { id = item.AccountID })" data-name="@item.Name">
+                    UnLock
                 </a>
             </td>
-
         </tr>
     }
 
 </table>
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $('.lock-btn').click(function (e) {
+        $('.unlock-btn').click(function (e) {
         // Ngăn chặn mặc định của sự kiện click
         e.preventDefault();
         var name = $(this).data('name');
 
         // Hiển thị cửa sổ cảnh báo thông báo
-        if (confirm('Bạn có muốn khóa tài khoản ' + name + ' không?')) {
+        if (confirm('Bạn có muốn mở khóa tài khoản ' + name + ' không?')) {
             // Nếu chọn confirm
             var lockUrl = $(this).data('lock-url');
             // Chuyển đến trang LockAcc
             window.location.href = lockUrl;
-            @*window.location.href = '@Url.Action("User", "Admin")';*@
-
-            alert("Bạn đã khóa tài khoản " + name + " thành công.")
+            alert("Bạn đã mở khóa tài khoản " + name + " thành công.")
         }
         else {
-            // Nếu chọn cancel
-            // Load lại trang User
-            location.reload();
-        }
+                // Nếu chọn cancel
+                // Load lại trang User
+                location.reload();
+            }
     });
 
 </script>
+
 
 

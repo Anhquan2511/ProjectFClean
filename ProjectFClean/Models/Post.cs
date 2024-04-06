@@ -14,20 +14,29 @@ namespace ProjectFClean.Models
     
     public partial class Post
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Post()
+        {
+            this.Applies = new HashSet<Apply>();
+        }
+    
         public int PID { get; set; }
         public int ServiceID { get; set; }
-        public decimal Price { get; set; }
+        public int Price { get; set; }
         public string Location { get; set; }
         public string Gender { get; set; }
         public Nullable<int> Age { get; set; }
-        public string Experience { get; set; }
+        public Nullable<int> Experience { get; set; }
         public string Description { get; set; }
         public Nullable<int> RID { get; set; }
         public Nullable<int> HID { get; set; }
-        public string DatePost { get; set; }
+        public System.DateTime DatePost { get; set; }
+        public Nullable<int> ApplyID { get; set; }
+        public Nullable<int> AccountID { get; set; }
     
-        public virtual Housekeeper Housekeeper { get; set; }
-        public virtual Renter Renter { get; set; }
+        public virtual Account Account { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Apply> Applies { get; set; }
         public virtual Service Service { get; set; }
     }
 }

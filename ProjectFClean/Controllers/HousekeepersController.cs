@@ -7,19 +7,29 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using System.Windows.Forms.VisualStyles;
 using ProjectFClean.Models;
 
 namespace ProjectFClean.Controllers
 {
     public class HousekeepersController : Controller
     {
-        private ProjectFCleanEntities2 db = new ProjectFCleanEntities2();
+        private ProjectFCleanEntities6 db = new ProjectFCleanEntities6();
 
         // GET: Housekeepers
         public ActionResult Index()
         {
-            var housekeeper = db.Housekeepers.Include(h => h.Account);
-            return View(housekeeper.ToList());
+            var account = Session["Account"] as ProjectFClean.Models.Account;
+            var housekeepers = db.Housekeepers.ToList();
+            if (account != null && housekeepers != null)
+            {
+                var housekeeperFound = housekeepers.SingleOrDefault(h => h.HID == account.AccountID);
+                if (housekeeperFound != null)
+                {
+                    return View(housekeeperFound);
+                }
+            }
+            return RedirectToAction("Login", "Accounts");   
         }
 
         // GET: Housekeepers/Details/5
@@ -63,20 +73,62 @@ namespace ProjectFClean.Controllers
         }
 
 
+        //[HttpPost, ActionName("UpdateProfile")]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult UpdateProfile(FormCollection form)
+        //{
+
+        //    // Extracting values from the form
+        //    // Form chứa một khối các data => cách lấy data của từng đối tượng là form["tên đối tượng] nhưng dạng nguyên bảng của nó ( kiểu dữ liệu ) -> string
+
+        //    return RedirectToAction("Index");
+
+
+        //}
         [HttpPost, ActionName("UpdateProfile")]
         [ValidateAntiForgeryToken]
         public ActionResult UpdateProfile(FormCollection form)
         {
+            string idStr = form["Id"];
+            var name = form["Name"];
+            var email = form["Email"];
+            var phone = form["Phone"];
 
-            // Extracting values from the form
-            // Form chứa một khối các data => cách lấy data của từng đối tượng là form["tên đối tượng] nhưng dạng nguyên bảng của nó ( kiểu dữ liệu ) -> string
-            var hidStr = form["Id"];
+            
+            int idInt;
+            if (int.TryParse(idStr, out idInt))
+                            {
+                // Chuyển đổi thành công, idInt chứa giá trị số nguyên
+            }
+            else
+            {
+                // Không thể chuyển đổi, xử lý tùy ý
+            }
+            //if (!int.TryParse(idStr, out id))
+            //{
+            //    return RedirectToAction("Error");
+            //}
+            var account = db.Accounts.FirstOrDefault(p => p.AccountID == idInt);
+
+            if (account != null)
+            {
+                account.Email = email;
+                account.Phone = phone;
+                account.Name = name;
+
+                db.Entry(account).State = EntityState.Modified;
+                Session["Account"] = account;
+            }
+            db.SaveChanges();
+            // ươới
+            var hidStr = form["HId"];
             var ageStr = form["Age"];
             var priceStr = form["Price"];
-
+            var experimentStr = form["Experiment"];
             int hid;
             int age;
             int price;
+            int experiment;
             // Vì nguyên bản là string nên tuổi nó đang là string -> cần parse qua int => khi parse sẽ có khả năng lỗi ( ví dụ a -> Int.parse(a) -> lỗi nên cần check lỗi như dưới
             if (!int.TryParse(hidStr, out hid) || !int.TryParse(ageStr, out age))
             {
@@ -87,10 +139,13 @@ namespace ProjectFClean.Controllers
             {
                 price = 0;
             }
-
+            if (!int.TryParse (experimentStr, out experiment))
+            {
+                experiment = 0;
+            }
             var gender = form["Gender"];
             var skill = form["Skill"];
-            var experiment = form["Experiment"];
+            
             var description = form["Description"];
             var address = form["Address"];
 
@@ -123,38 +178,6 @@ namespace ProjectFClean.Controllers
                 Session["Housekeeper"] = houseKeeper;
                 db.Housekeepers.Add(houseKeeper);
             }
-
-            db.SaveChanges();
-            return RedirectToAction("Index");
-
-
-        }
-
-        public ActionResult UpdateAccount(FormCollection form)
-        {
-            var idStr = form["Id"];
-            var name = form["Name"];
-            var email = form["Email"];
-            var phone = form["Phone"];
-
-            int id;
-
-            if (!int.TryParse(idStr, out id))
-            {
-                return RedirectToAction("Error");
-            }
-            var account = db.Accounts.FirstOrDefault(p => p.AccountID == id);
-
-            if (account != null)
-            {
-                account.Email = email;
-                account.Phone = phone;
-                account.Name = name;
-
-                db.Entry(account).State = EntityState.Modified;
-                Session["Account"] = account;
-            }
-
             db.SaveChanges();
             return RedirectToAction("Index");
 
@@ -220,6 +243,55 @@ namespace ProjectFClean.Controllers
             db.SaveChanges();
             return RedirectToAction("Index");
         }
+        [HttpPost]
+        public ActionResult ChangeAvt(HttpPostedFileBase newAvatar)
+        {
+            if (newAvatar != null && newAvatar.ContentLength > 0)
+            {
+                if (newAvatar.ContentType == "image/jpeg" || newAvatar.ContentType == "image/png" || newAvatar.ContentType == "image/gif")
+                {
+                    var account = Session["Account"] as ProjectFClean.Models.Account;
+                    if (account != null)
+                    {
+                        string imgHPath = Server.MapPath("~/img/");
+                        if (!Directory.Exists(imgHPath))
+                        {
+                            Directory.CreateDirectory(imgHPath);
+                        }
+                        // Xóa ảnh cũ trước khi cập nhật ảnh mới
+                        string oldImagePath = Server.MapPath("~/img/" + account.ImgAvatarID.ToString() + ".jpg");
+                        if (System.IO.File.Exists(oldImagePath))
+                        {
+                            System.IO.File.Delete(oldImagePath);
+                        }
+                        // Tạo tên tệp mới dựa trên ID của tài khoản và phần mở rộng của tệp
+                        string fileName = account.ImgAvatarID.ToString() + ".jpg";
+                        string filePath = Path.Combine(imgHPath, fileName);
+                        newAvatar.SaveAs(filePath);
+
+                        // Cập nhật đường dẫn ảnh trong cơ sở dữ liệu
+                        using (var db = new ProjectFCleanEntities6())
+                        {
+                            account.ImgAvatarID = account.ImgAvatarID; // Giữ nguyên ID ảnh
+                            db.Entry(account).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+                    }
+                    else
+                    {
+                        // Xử lý khi không tìm thấy tài khoản
+                    }
+                }
+                else
+                {
+                    // Xử lý khi tệp không phải là ảnh
+                }
+            }
+            return RedirectToAction("Index");
+        }
+
+
+
 
         protected override void Dispose(bool disposing)
         {
@@ -231,38 +303,39 @@ namespace ProjectFClean.Controllers
         }
 
 
+      
 
 
 
-        // POST: Housekeepers/Delete/5
-        [HttpPost, ActionName("ChangeAvt")]
-        public ActionResult ChangeAvt(HttpPostedFileBase newAvatar) 
-        {
-            if (newAvatar != null)
-            {
-                // Đường dẫn đến thư mục imgH
-                string imgHPath = Server.MapPath("~/img/imgH/");
+        //// POST: Housekeepers/Delete/5
+        //[HttpPost, ActionName("ChangeAvt")]
+        //public ActionResult ChangeAvt(HttpPostedFileBase newAvatar) 
+        //{
+        //    if (newAvatar != null)
+        //    {
+        //        // Đường dẫn đến thư mục imgH
+        //        string imgHPath = Server.MapPath("~/img/");
 
-                // Tạo thư mục nếu chưa tồn tại
-                if (!Directory.Exists(imgHPath))
-                {
-                    Directory.CreateDirectory(imgHPath);
-                }
-                var account = Session["Account"] as ProjectFClean.Models.Account;
+        //        // Tạo thư mục nếu chưa tồn tại
+        //        if (!Directory.Exists(imgHPath))
+        //        {
+        //            Directory.CreateDirectory(imgHPath);
+        //        }
+        //        var account = Session["Account"] as ProjectFClean.Models.Account;
 
-                string fileName = account.Name ;
+        //        string fileName = account.Name ;
 
-                string fileExtension = Path.GetExtension(newAvatar.FileName);
+        //        string fileExtension = Path.GetExtension(newAvatar.FileName);
 
-                string filePath = Path.Combine(imgHPath, fileName + fileExtension);
+        //        string filePath = Path.Combine(imgHPath, fileName + fileExtension);
 
-                using (FileStream fileToSave = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-                {
-                    newAvatar.InputStream.CopyTo(fileToSave);
-                }
-            }
+        //        using (FileStream fileToSave = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+        //        {
+        //            newAvatar.InputStream.CopyTo(fileToSave);
+        //        }
+        //    }
 
-            return RedirectToAction("Index");
-        }
+        //    return RedirectToAction("Index");
+        //}
     }
 }

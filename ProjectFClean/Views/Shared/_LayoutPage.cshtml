@@ -70,14 +70,19 @@
                 @{
                     if (account != null)
                     {
+                        // code chuong o day
+
                         if (account.Role == "Housekeeper")
                         {
-
-                            <a style="color: #00B074; padding-right: 10px" href="Housekeepers/Index"> @account.Name</a>
+                            // Viet cai chuong thong bao o day nay
+                            // vay sao khong lam cai chuong o ben thang idex home khi dang nhap vo la no co cai chuong thong bao thoi 
+                            // Đây la cai layout la cai thanh ngang o tren ay co nut login logut do day, dang nhap vao thi no hien ra them cai chuong roi thong bao la cai chuong drop down xuong
+                            <a style="color: #00B074; padding-right: 10px" href="/Housekeepers/Index"> @account.Name</a>
                         }
                         if (account.Role == "Renter")
                         {
-                            <a style="color: #00B074; padding-right: 10px" href="Renters/Index"> @account.Name</a>
+                            // Duoi nay coppy y chang cai o tren la duoc 
+                            <a style="color: #00B074; padding-right: 10px" href="/Renters/Index"> @account.Name</a>
                         }
 
                         <form id="logoutForm" action="@Url.Action("Logout", "Home")" method="post">

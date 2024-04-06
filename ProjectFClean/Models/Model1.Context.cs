@@ -13,10 +13,10 @@ namespace ProjectFClean.Models
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class ProjectFCleanEntities2 : DbContext
+    public partial class ProjectFCleanEntities6 : DbContext
     {
-        public ProjectFCleanEntities2()
-            : base("name=ProjectFCleanEntities2")
+        public ProjectFCleanEntities6()
+            : base("name=ProjectFCleanEntities6")
         {
         }
     
@@ -27,6 +27,7 @@ namespace ProjectFClean.Models
     
         public virtual DbSet<Account> Accounts { get; set; }
         public virtual DbSet<Admin> Admins { get; set; }
+        public virtual DbSet<Apply> Applies { get; set; }
         public virtual DbSet<Compact> Compacts { get; set; }
         public virtual DbSet<Compact_detail> Compact_detail { get; set; }
         public virtual DbSet<Feedback> Feedbacks { get; set; }
@@ -35,5 +36,7 @@ namespace ProjectFClean.Models
         public virtual DbSet<Post> Posts { get; set; }
         public virtual DbSet<Renter> Renters { get; set; }
         public virtual DbSet<Service> Services { get; set; }
+        public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
+        public virtual DbSet<Transaction> Transactions { get; set; }
     }
 }

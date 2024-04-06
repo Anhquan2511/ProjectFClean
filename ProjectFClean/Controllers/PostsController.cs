@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -13,12 +14,13 @@ namespace ProjectFClean.Controllers
 {
     public class PostsController : Controller
     {
-        private readonly ProjectFCleanEntities2 db = new ProjectFCleanEntities2();
+        private readonly ProjectFCleanEntities6 db = new ProjectFCleanEntities6();
 
         public class PostIndexViewModel
         {
             public List<Post> ListPost { get; set; }
             public List<Service> ListService { get; set; }
+            public List<Apply> ListApply { get; set; }
         }
 
 
@@ -28,81 +30,165 @@ namespace ProjectFClean.Controllers
             var viewModelPost = new PostIndexViewModel
             {
                 ListPost = db.Posts.ToList(),
-
+                ListService = db.Services.ToList(),
             };
-            return View(viewModelPost);
-            //var post = db.Post.Include(p => p.PID);            
-            //var post = db.Post; // No Include statement
-            //return View(post.ToList());
 
+            // Lấy thông tin về người đăng nhập từ Session
+            var loggedInUser = (Account)Session["Account"];
+
+            // Kiểm tra xem người đăng nhập có vai trò là Housekeeper không
+            if (loggedInUser != null) {
+                if (loggedInUser.Role == "Housekeeper")
+                {
+                    // Lấy tên của người đăng bài từ bảng Account và gán vào mỗi bài đăng
+                    foreach (var post in viewModelPost.ListPost)
+                    {
+                        post.Account = db.Accounts.FirstOrDefault(a => a.AccountID == post.HID);
+                    }
+                }
+                else if (loggedInUser.Role == "Renter")
+                {
+                    // Lấy tên của người đăng bài từ bảng Account và gán vào mỗi bài đăng
+                    foreach (var post in viewModelPost.ListPost)
+                    {
+                        post.Account = db.Accounts.FirstOrDefault(a => a.AccountID == post.RID);
+                    }
+                }
+            }
+                return View(viewModelPost);
         }
+
         // GET: Posts/Details/5
         public ActionResult DetailsPost(int pid = 0)
         {
-
             if (pid == 0)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             Post post = db.Posts.Find(pid);
             if (post == null)
             {
                 return HttpNotFound();
             }
-            //return View(post);
+
+            // Lấy thông tin về người đăng nhập từ Session
+            var loggedInUser = (Account)Session["Account"];
+            // Kiểm tra xem người đăng nhập có phải là chủ bài đăng không
+            bool isOwner = false; // Biến này sẽ kiểm tra xem người dùng hiện tại có phải là chủ bài đăng không
+
+            if (loggedInUser != null)
+            {
+                // Nếu người dùng hiện tại là chủ bài đăng
+                if (/*loggedInUser.AccountID != null &&*/ loggedInUser.AccountID == post.AccountID)
+                {
+                    isOwner = true;
+                }
+            }
+            else
+            {
+                isOwner = false;
+            }
+            // Lấy danh sách các đơn apply cho bài viết này
+            var applies = db.Applies.Where(a => a.PID == pid).ToList();
+
+            // Truyền thông tin bài viết và danh sách đơn apply vào ViewBag để sử dụng trong View
+            ViewBag.Post = post;
+            ViewBag.Applies = applies;
+            ViewBag.IsOwner = isOwner; // Gửi biến bool này vào View để sử dụng trong quyết định hiển thị các nút
+
             return View("Details", post);
         }
 
+
+        // GET: Posts/Details/5
+        //public ActionResult DetailsPost(int pid = 0)
+        //{
+
+        //    if (pid == 0)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    Post post = db.Post.Find(pid);
+        //    if (post == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    return View("Details", post);
+        //}
+
         // GET: Posts/Create
+        //public ActionResult Create()
+        //{
+        //    IEnumerable<SelectListItem> serviceOptions = GetServiceOptions();
+        //    ViewData["ServiceID"] = serviceOptions;
+        //    return View();
+        //}
         public ActionResult Create()
         {
-            IEnumerable<SelectListItem> serviceOptions = GetServiceOptions();
-            ViewData["ServiceID"] = serviceOptions;
-            return View();
-        }
-
-        private IEnumerable<SelectListItem> GetServiceOptions()
-        {
-            // Query the database for services
-            var services = db.Services.ToList();
-
-            // Create a list of SelectListItem objects
-            var options = new List<SelectListItem>();
-
-            // Add an option to allow for no selection
-            options.Add(new SelectListItem { Value = "", Text = " Select a Service " });
-
-            // Populate the options list with service data
-            foreach (var service in services)
+            var loggedInUser = (Account)Session["Account"];
+            if (loggedInUser == null)
             {
-                options.Add(new SelectListItem
-                {
-                    Value = service.ServiceID.ToString(),
-                    Text = service.Name_of_service
-                });
+                TempData["ErrorMessage"] = "You need to login to create a post.";
+                return RedirectToAction("Login", "Accounts"); 
             }
 
-            return options;
+            var viewModel = new PostIndexViewModel
+            {
+                ListService = db.Services.ToList(),
+                ListPost = new List<Post>()
+            };
+
+            // Tạo danh sách các mục để chọn từ ListService và gán cho "ServiceID"
+            ViewBag.AccountID = new SelectList(db.Accounts, "AccountID", "Name");
+            ViewBag.ServiceID = new SelectList(db.Services, "ServiceID", "Name_of_service");
+
+            // Truyền một đối tượng Post vào View
+            return View(new Post());
         }
 
 
         // POST: Posts/Create        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "PID,ServiceID,Price,Location,Gender,Age,Experience,Description,RID,HID,DatePost")] Post post)
+        public ActionResult Create([Bind(Include = "ServiceID,Price,Location,Gender,Age,Experience,Description")] Post post)
         {
             if (ModelState.IsValid)
             {
-                int maxPID = db.Posts.Max(p => (int?)p.PID) ?? 0;
-                post.PID = maxPID + 1;
+                // Lấy thông tin tài khoản người dùng đăng nhập từ Session
+                var loggedInUser = (Account)Session["Account"];
 
-                db.Posts.Add(post);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+               
+                    // Lấy thông tin Housekeeper từ cơ sở dữ liệu
+                    var account = db.Accounts.FirstOrDefault(h => h.AccountID == loggedInUser.AccountID);
+                    if (account != null)
+                    {
+                        
+                        post.AccountID = account.AccountID;
+                    }
+                
+                
+                post.DatePost = DateTime.Now;
+                try
+                {
+                    // Thêm bài đăng vào cơ sở dữ liệu
+                    db.Posts.Add(post);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    // Xử lý ngoại lệ nếu có
+                    ModelState.AddModelError("", "An error occurred while saving the post: " + ex.Message);
+                    return View(post);
+                };
             }
-            ViewBag.ServiceID = new SelectList(db.Services, "ServiceID", "Name_of_service", post.ServiceID);
+
+            // Nếu ModelState không hợp lệ, trả về View với dữ liệu post để người dùng nhập lại
             return View(post);
         }
+
+
 
         // GET: Posts/Edit/5
         public ActionResult Edit(int id = 0)
@@ -116,32 +202,60 @@ namespace ProjectFClean.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.ServiceID = new SelectList(db.Services, "ServiceID", "Name_of_service", post.ServiceID);
+
+            // Lấy danh sách dịch vụ từ cơ sở dữ liệu
+            var services = db.Services.ToList();
+            var accounts = db.Accounts.ToList();
+           
+            // Tạo một SelectList từ danh sách tài khoản
+            ViewBag.AccountID = new SelectList(accounts, "AccountID", "Name", post.AccountID);
+
+            // Tạo một SelectList từ danh sách dịch vụ
+            ViewBag.ServiceID = new SelectList(services, "ServiceID", "Name_of_service", post.ServiceID);
             return View(post);
         }
 
-
         // POST: Posts/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "PID,ServiceID,Price,Location,Gender,Age,Experience,Description,RID,HID,DatePost")] Post post)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(post).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    // Kiểm tra xem bản ghi cần cập nhật vẫn tồn tại trong cơ sở dữ liệu
+                    var existingPost = db.Posts.Find(post.PID);
+                    if (existingPost == null)
+                    {
+                        // Nếu không tìm thấy bản ghi, trả về một lỗi hoặc thực hiện một hành động phù hợp
+                        return HttpNotFound();
+                    }
+
+                    // Cập nhật thông tin của bài đăng trong cơ sở dữ liệu
+                    db.Entry(existingPost).CurrentValues.SetValues(post);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    // Xử lý ngoại lệ nếu có
+                    ModelState.AddModelError("", "An error occurred while saving the post: " + ex.Message);
+                    return View(post);
+                }
             }
-            ViewBag.ServiceID = new SelectList(db.Services, "ServiceID", "Name_of_service", post.ServiceID);
+
+            // Nếu ModelState không hợp lệ, trả về view để hiển thị thông báo lỗi
             return View(post);
         }
 
+
+
+
         // GET: Posts/Delete/5
-        public ActionResult Delete(string id)
+        public ActionResult Delete(int? id)
         {
-            if (id == null)
+            if (id == 0)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
@@ -153,12 +267,17 @@ namespace ProjectFClean.Controllers
             return View(post);
         }
 
-        // POST: Posts/Delete/5
-        [HttpPost, ActionName("Delete")]
+        //POST: Posts/Delete/5
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(string id)
+        public ActionResult DeleteConfirmed(int id)
         {
             Post post = db.Posts.Find(id);
+            if (post == null)
+            {
+                return HttpNotFound(); // Trả về HTTP 404 nếu bài đăng không tồn tại
+            }
+
             db.Posts.Remove(post);
             db.SaveChanges();
             return RedirectToAction("Index");
@@ -172,5 +291,160 @@ namespace ProjectFClean.Controllers
             }
             base.Dispose(disposing);
         }
+        [HttpGet]
+        public PartialViewResult Search(string gender, string location, string name, string service)
+        {
+            try
+            {
+                // Lọc danh sách Post dựa trên các tham số tìm kiếm
+                IQueryable<Post> posts = db.Posts;
+
+                if (!string.IsNullOrEmpty(gender))
+                {
+                    posts = posts.Where(p => p.Gender == gender);
+                }
+
+                if (!string.IsNullOrEmpty(location))
+                {
+                    posts = posts.Where(p => p.Location == location);
+                }
+
+                if (!string.IsNullOrEmpty(name))
+                {
+                    posts = posts.Where(p => p.Account.Name.Contains(name));
+                }
+
+                if (!string.IsNullOrEmpty(service))
+                {
+                    // Kiểm tra xem Post có chứa dịch vụ service trong danh sách dịch vụ của mình hay không
+                    posts = posts.Where(p => p.Service.Name_of_service.Contains(service));
+                }
+
+                List<Post> searchResult = posts.ToList();
+
+                var viewModel = new PostIndexViewModel
+                {
+                    ListPost = searchResult,
+                    ListService = db.Services.ToList()
+                };
+
+                return PartialView("_PostList", viewModel);
+            }
+            catch (Exception ex)
+            {
+                // Xử lý lỗi và trả về kết quả phù hợp
+                return PartialView("_Error", ex.Message);
+            }
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Apply(int postId)
+        {
+            // Lấy thông tin về người đăng nhập từ Session
+            var loggedInUser = (Account)Session["Account"];
+
+            // Kiểm tra xem người dùng đã đăng nhập chưa
+            if (loggedInUser == null)
+            {
+                TempData["ErrorMessage"] = "You need to login to apply for this post.";
+                return RedirectToAction("Login", "Accounts");
+            }
+
+            try
+            {
+                // Tạo một đơn apply mới
+                var newApply = new Apply
+                {
+                    PID = postId, // Gán ID của bài post mà đơn apply được gửi đến
+                    AccountID = loggedInUser.AccountID, // Gán ID của người dùng gửi đơn apply (nếu cần)
+                    Status = "Pending" // Gán trạng thái của đơn apply
+                };
+
+                // Thêm đơn apply mới vào danh sách applies của bài post
+                var post = db.Posts.Find(postId);
+                if (post != null)
+                {
+                    post.Applies.Add(newApply);
+                    db.SaveChanges();
+                    TempData["SuccessMessage"] = "Your application has been submitted successfully.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Failed to submit application. Post not found.";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                // Xử lý lỗi nếu có
+                TempData["ErrorMessage"] = "An error occurred while processing your application: " + ex.Message;
+            }
+            // Xóa TempData sau khi sử dụng
+            TempData.Remove("SuccessMessage");
+            TempData.Remove("ErrorMessage");
+
+            // Sau khi thêm đơn apply, chuyển hướng người dùng đến trang chi tiết bài post
+            return RedirectToAction("DetailsPost", new { pid = postId });
+        }
+
+        [HttpPost]
+        public ActionResult ConfirmApply(int applyId)
+        {
+            try
+            {
+                // Tìm đơn apply trong cơ sở dữ liệu bằng applyId
+                var apply = db.Applies.FirstOrDefault(a => a.ApplyID == applyId);
+
+                if (apply != null)
+                {
+                    // Cập nhật trạng thái của apply và lưu vào cơ sở dữ liệu
+                    apply.Status = "Confirmed";
+                    db.SaveChanges();
+                    return Json(new { success = true });
+                }
+                else
+                {
+                    // Nếu không tìm thấy đơn apply, trả về thông báo lỗi
+                    return Json(new { success = false, message = "Apply not found." });
+                }
+            }
+            catch (Exception ex)
+            {
+                // Xử lý ngoại lệ nếu có
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult CancelApply(int applyId)
+        {
+            try
+            {
+                // Tìm đơn apply trong cơ sở dữ liệu bằng applyId
+                var apply = db.Applies.FirstOrDefault(a => a.ApplyID == applyId);
+
+                if (apply != null)
+                {
+                    // Cập nhật trạng thái của apply và lưu vào cơ sở dữ liệu
+                    apply.Status = "Canceled";
+                    db.SaveChanges();
+                    return Json(new { success = true });
+                }
+                else
+                {
+                    // Nếu không tìm thấy đơn apply, trả về thông báo lỗi
+                    return Json(new { success = false, message = "Apply not found." });
+                }
+            }
+            catch (Exception ex)
+            {
+
+                // Xử lý ngoại lệ nếu có
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
     }
+
 }
+

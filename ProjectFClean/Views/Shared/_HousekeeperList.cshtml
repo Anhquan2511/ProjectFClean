@@ -4,17 +4,17 @@
 {
     <a data-hid="@housekeeper.HID">
         <div class="card">
-            <img class="card-img-top" src="/img/imgH/@(housekeeper.HID).jpg" alt="Card image cap">
+            <img class="card-img-top" src="/img/@(housekeeper.Account.AccountID).jpg" alt="Card image cap">
             <div class="card-body">
                 <h5 class="card-title">@housekeeper.Account.Name</h5>
-                <p class="card-text">Service: @housekeeper.Description</p>
+                <p class="card-text">Service: @housekeeper.Skill</p>
                 <p class="card-text">Experiment: @housekeeper.Experiment</p>
                 <p id="Price" class="card-text">@housekeeper.Price VNĐ</p>
-
             </div>
         </div>
     </a>
 }
+
 
 <style>
     #Price {

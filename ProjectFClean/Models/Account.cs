@@ -17,8 +17,10 @@ namespace ProjectFClean.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Account()
         {
+            this.Applies = new HashSet<Apply>();
             this.Admins = new HashSet<Admin>();
             this.Housekeepers = new HashSet<Housekeeper>();
+            this.Posts = new HashSet<Post>();
             this.Renters = new HashSet<Renter>();
         }
     
@@ -30,11 +32,16 @@ namespace ProjectFClean.Models
         public string Password { get; set; }
         public string Role { get; set; }
         public string Approve { get; set; }
+        public string ImgAvatarID { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Apply> Applies { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Admin> Admins { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Housekeeper> Housekeepers { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Post> Posts { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Renter> Renters { get; set; }
     }
